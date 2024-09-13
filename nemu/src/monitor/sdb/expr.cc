@@ -103,7 +103,7 @@ static const unsigned op##_reg = [] { \
         if (pos == std::string_view::npos) return {}; \
         auto right = parse_expr(currentLevel - 1, sv.substr(pos + toFind.size())); \
         if (!right) return {}; \
-        auto left = parse_expr(currentLevel, sv.substr(pos)); \
+        auto left = parse_expr(currentLevel, sv.substr(0, pos)); \
         if (!left) return {}; \
         return std::make_unique<op>(std::move(left), std::move(right)); \
     }); \
@@ -119,20 +119,7 @@ public:
     }
 };
 
-static const unsigned addition_reg = [] {
-    parsers[3].emplace_back([](unsigned currentLevel, std::string_view sv) -> std::unique_ptr<expression> {
-        if (sv.empty()) return {};
-        constexpr std::string_view toFind = "+";
-        auto pos = sv.rfind(toFind);
-        if (pos == std::string_view::npos) return {};
-        auto right = parse_expr(currentLevel - 1, sv.substr(pos + toFind.size()));
-        if (!right) return {};
-        auto left = parse_expr(currentLevel, sv.substr(pos));
-        if (!left) return {};
-        return std::make_unique<addition>(std::move(left), std::move(right));
-    });
-    return 0;
-}();
+BINARY_REG(addition, 3, "+");
 
 class subtraction : public binary_operation {
 public:
