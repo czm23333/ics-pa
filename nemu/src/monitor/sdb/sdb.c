@@ -67,7 +67,9 @@ static struct {
     {"c", "Continue the execution of the program", cmd_c},
     {"q", "Exit NEMU", cmd_q},
     {"si", "Execute exactly N instructions", cmd_si},
-    {"info", "Show runtime info", cmd_info}
+    {"info", "Show runtime info", cmd_info},
+    {"x", "Display the content in memory", cmd_x},
+    {"p", "Evaluate expression", cmd_p}
     /* TODO: Add more commands */
 
 };
