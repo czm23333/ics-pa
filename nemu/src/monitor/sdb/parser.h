@@ -27,7 +27,7 @@ std::tuple<std::optional<std::string>> parse_ker<std::string>(std::string_view s
     return std::string(sv);
 }
 
-template<size_t unused = 0>
+template<size_t = 0>
 std::tuple<> parse_impl(std::string_view sv) {
     return std::make_tuple();
 }
