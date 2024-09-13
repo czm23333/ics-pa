@@ -43,3 +43,9 @@ template<typename... Args>
 std::tuple<std::optional<Args>...> parse(std::string_view sv) {
     return parse_impl<Args...>(sv);
 }
+
+template<typename... Args>
+std::tuple<std::optional<Args>...> parse(const char* ptr) {
+    if (ptr == nullptr) return std::make_tuple(std::optional<Args>{}...);
+    return parse_impl<Args...>(std::string_view{ptr});
+}
