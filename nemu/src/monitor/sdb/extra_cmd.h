@@ -1,9 +1,3 @@
 #pragma once
-
-#ifdef __cplusplus
-#define EXTERNC extern "C"
-#else
-#define EXTERNC
-#endif
-
+#include <externc.h>
 EXTERNC int cmd_si(char* args);

@@ -1,8 +1,9 @@
 #include "extra_cmd.h"
 #include "parser.h"
+#include <cpu/cpu.h>
 
 extern "C" int cmd_si(char* args) {
     auto [num] = parse<int>(args);
-    printf("%d\n", num.value_or(-1));
+    cpu_exec(num.value_or(1));
     return 0;
 }
