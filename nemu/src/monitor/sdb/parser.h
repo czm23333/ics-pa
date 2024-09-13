@@ -6,10 +6,10 @@
 #include <string>
 
 template<typename Arg>
-std::tuple<std::optional<Arg>> parse_ker(std::string_view& sv);
+std::tuple<std::optional<Arg> > parse_ker(std::string_view &sv);
 
 template<>
-inline std::tuple<std::optional<int>> parse_ker<int>(std::string_view& sv) {
+inline std::tuple<std::optional<int> > parse_ker<int>(std::string_view &sv) {
     int res = 0;
     if (auto [ptr, ec] = std::from_chars(sv.data(), sv.data() + sv.size(), res); ec == std::errc()) {
         sv.remove_prefix(ptr - sv.data());
@@ -19,7 +19,7 @@ inline std::tuple<std::optional<int>> parse_ker<int>(std::string_view& sv) {
 }
 
 template<>
-inline std::tuple<std::optional<double>> parse_ker<double>(std::string_view& sv) {
+inline std::tuple<std::optional<double> > parse_ker<double>(std::string_view &sv) {
     double res = 0;
     if (auto [ptr, ec] = std::from_chars(sv.data(), sv.data() + sv.size(), res); ec == std::errc()) {
         sv.remove_prefix(ptr - sv.data());
@@ -29,7 +29,7 @@ inline std::tuple<std::optional<double>> parse_ker<double>(std::string_view& sv)
 }
 
 template<>
-inline std::tuple<std::optional<std::string>> parse_ker<std::string>(std::string_view& sv) {
+inline std::tuple<std::optional<std::string> > parse_ker<std::string>(std::string_view &sv) {
     auto pos = sv.find_first_of(' ');
     auto res = std::string(sv.substr(0, pos));
     if (pos != std::string_view::npos) sv.remove_prefix(pos + 1);
@@ -54,7 +54,7 @@ std::tuple<std::optional<Args>...> parse(std::string_view sv) {
 }
 
 template<typename... Args>
-std::tuple<std::optional<Args>...> parse(const char* ptr) {
+std::tuple<std::optional<Args>...> parse(const char *ptr) {
     if (ptr == nullptr) return std::make_tuple(std::optional<Args>{}...);
     return parse_impl<Args...>(std::string_view{ptr});
 }
