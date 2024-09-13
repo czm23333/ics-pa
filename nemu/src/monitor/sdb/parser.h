@@ -13,7 +13,6 @@ template<>
 inline std::tuple<std::optional<int> > _parse_arg_ker<int>(std::string_view &sv) {
     int res = 0;
     if (auto [ptr, ec] = std::from_chars(sv.data(), sv.data() + sv.size(), res); ec == std::errc()) {
-        printf("%ld\n", ptr - sv.data());
         sv.remove_prefix(ptr - sv.data());
         return std::make_tuple(res);
     }
@@ -53,7 +52,8 @@ std::tuple<> _parse_arg_impl(std::string_view) {
 template<typename Arg, typename... Rest>
 std::tuple<std::optional<Arg>, std::optional<Rest>...> _parse_arg_impl(std::string_view sv) {
     while (!sv.empty() && sv.front() == ' ') sv.remove_prefix(1);
-    return std::tuple_cat(_parse_arg_ker<Arg>(sv), _parse_arg_impl<Rest...>(sv));
+    auto res = _parse_arg_ker<Arg>(sv);
+    return std::tuple_cat(std::move(res), _parse_arg_impl<Rest...>(sv));
 }
 
 template<typename... Args>
