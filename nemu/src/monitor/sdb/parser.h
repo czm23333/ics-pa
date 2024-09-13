@@ -13,6 +13,7 @@ template<>
 inline std::tuple<std::optional<int> > _parse_arg_ker<int>(std::string_view &sv) {
     int res = 0;
     if (auto [ptr, ec] = std::from_chars(sv.data(), sv.data() + sv.size(), res); ec == std::errc()) {
+        printf("%ld\n", ptr - sv.data());
         sv.remove_prefix(ptr - sv.data());
         return std::make_tuple(res);
     }
