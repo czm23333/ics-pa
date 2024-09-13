@@ -2,6 +2,7 @@
 #include "parser.h"
 
 extern "C" int cmd_si(char* args) {
-    parse<int>(std::string_view(args));
+    auto [num] = parse<int>(std::string_view(args));
+    printf("%d\n", num.value_or(-1));
     return 0;
 }
