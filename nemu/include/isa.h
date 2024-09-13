@@ -16,6 +16,8 @@
 #ifndef __ISA_H__
 #define __ISA_H__
 
+#include <externc.h>
+
 // Located at src/isa/$(GUEST_ISA)/include/isa-def.h
 #include <isa-def.h>
 
@@ -27,19 +29,19 @@ typedef concat(__GUEST_ISA__, _ISADecodeInfo) ISADecodeInfo;
 // monitor
 extern unsigned char isa_logo[];
 
-void init_isa();
+EXTERNC void init_isa();
 
 // reg
 extern CPU_state cpu;
 
-void isa_reg_display();
+EXTERNC void isa_reg_display();
 
-word_t isa_reg_str2val(const char *name, bool *success);
+EXTERNC word_t isa_reg_str2val(const char *name, bool *success);
 
 // exec
 struct Decode;
 
-int isa_exec_once(struct Decode *s);
+EXTERNC int isa_exec_once(struct Decode *s);
 
 // memory
 enum { MMU_DIRECT, MMU_TRANSLATE, MMU_FAIL };
@@ -50,18 +52,18 @@ enum { MEM_RET_OK, MEM_RET_FAIL, MEM_RET_CROSS_PAGE };
 #ifndef isa_mmu_check
 int isa_mmu_check(vaddr_t vaddr, int len, int type);
 #endif
-paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type);
+EXTERNC paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type);
 
 // interrupt/exception
-vaddr_t isa_raise_intr(word_t NO, vaddr_t epc);
+EXTERNC vaddr_t isa_raise_intr(word_t NO, vaddr_t epc);
 
 #define INTR_EMPTY ((word_t)-1)
 
-word_t isa_query_intr();
+EXTERNC word_t isa_query_intr();
 
 // difftest
-bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc);
+EXTERNC bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc);
 
-void isa_difftest_attach();
+EXTERNC void isa_difftest_attach();
 
 #endif

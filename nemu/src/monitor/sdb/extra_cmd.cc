@@ -13,7 +13,7 @@ extern "C" int cmd_si(char *args) {
 extern "C" int cmd_info(char *args) {
     auto [type] = parse<std::string>(args);
     if (type == "r") {
-        for (size_t i = 0; i < std::size(cpu.gpr); ++i) printf("Register %lu: %u\n", i, cpu.gpr[i]);
+        isa_reg_display();
     } else if (type == "w") {
     } else printf("Unknown subcommand");
     return 0;
