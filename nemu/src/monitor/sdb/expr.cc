@@ -57,7 +57,7 @@ static const unsigned number_reg = [] {
         }
         unsigned res = 0;
         auto [ptr, ec] = std::from_chars(sv.data(), sv.data() + sv.size(), res, base);
-        if (ec == std::errc() && ptr == sv.data()+ sv.size()) return std::make_unique<number>(res);
+        if (ec == std::errc() && ptr == sv.data() + sv.size()) return std::make_unique<number>(res);
         return {};
     });
     return 0;
