@@ -2,6 +2,7 @@
 
 #include <charconv>
 #include <functional>
+#include <utility>
 #include <vector>
 #include <string>
 #include <memory>
@@ -67,7 +68,7 @@ class register_access : public expression {
 public:
     const std::string name;
 
-    explicit register_access(const std::string &name) : name(name) {
+    explicit register_access(std::string name) : name(std::move(name)) {
     }
 
     unsigned exec() override {
