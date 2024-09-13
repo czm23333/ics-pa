@@ -18,6 +18,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
+#include "extra_cmd.h"
 
 static int is_batch_mode = false;
 
@@ -63,6 +64,7 @@ static struct {
   { "help", "Display information about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
+  {"si", "Execute exactly N instructions", cmd_si }
 
   /* TODO: Add more commands */
 
