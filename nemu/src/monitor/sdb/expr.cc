@@ -33,6 +33,10 @@ public:
     unsigned exec() override {
         return num;
     }
+
+    std::string to_string() override {
+        return std::to_string(num);
+    }
 };
 
 static const unsigned brace_reg = [] {
@@ -75,6 +79,10 @@ public:
         bool tmp;
         return isa_reg_str2val(name.c_str(), &tmp);
     }
+
+    std::string to_string() override {
+        return "$" + name;
+    }
 };
 
 static const unsigned register_access_reg = [] {
@@ -87,11 +95,17 @@ static const unsigned register_access_reg = [] {
 }();
 
 class binary_operation : public expression {
+protected:
+    virtual std::string getOp() = 0;
 public:
     const std::unique_ptr<expression> left, right;
 
     binary_operation(std::unique_ptr<expression> &&left, std::unique_ptr<expression> &&right) : left(std::move(left)),
         right(std::move(right)) {
+    }
+
+    std::string to_string() override {
+        return "(" + left->to_string() + ") " + getOp() + " (" + right->to_string() + ")";
     }
 };
 
@@ -112,6 +126,10 @@ static const unsigned op##_reg = [] { \
 }()
 
 class addition : public binary_operation {
+protected:
+    std::string getOp() override {
+        return "+";
+    }
 public:
     using binary_operation::binary_operation;
 
@@ -123,6 +141,10 @@ public:
 BINARY_REG(addition, 3, "+");
 
 class subtraction : public binary_operation {
+protected:
+    std::string getOp() override {
+        return "-";
+    }
 public:
     using binary_operation::binary_operation;
 
@@ -134,6 +156,10 @@ public:
 BINARY_REG(subtraction, 3, "-");
 
 class multiplication : public binary_operation {
+protected:
+    std::string getOp() override {
+        return "*";
+    }
 public:
     using binary_operation::binary_operation;
 
@@ -145,6 +171,10 @@ public:
 BINARY_REG(multiplication, 2, "*");
 
 class division : public binary_operation {
+protected:
+    std::string getOp() override {
+        return "/";
+    }
 public:
     using binary_operation::binary_operation;
 
@@ -156,6 +186,10 @@ public:
 BINARY_REG(division, 2, "/");
 
 class equal : public binary_operation {
+protected:
+    std::string getOp() override {
+        return "==";
+    }
 public:
     using binary_operation::binary_operation;
 
@@ -167,6 +201,10 @@ public:
 BINARY_REG(equal, 5, "==");
 
 class not_equal : public binary_operation {
+protected:
+    std::string getOp() override {
+        return "!=";
+    }
 public:
     using binary_operation::binary_operation;
 
@@ -178,6 +216,10 @@ public:
 BINARY_REG(not_equal, 5, "!=");
 
 class greater : public binary_operation {
+protected:
+    std::string getOp() override {
+        return ">";
+    }
 public:
     using binary_operation::binary_operation;
 
@@ -189,6 +231,10 @@ public:
 BINARY_REG(greater, 4, ">");
 
 class less : public binary_operation {
+protected:
+    std::string getOp() override {
+        return "<";
+    }
 public:
     using binary_operation::binary_operation;
 
@@ -200,6 +246,10 @@ public:
 BINARY_REG(less, 4, "<");
 
 class less_equal : public binary_operation {
+protected:
+    std::string getOp() override {
+        return "<=";
+    }
 public:
     using binary_operation::binary_operation;
 
@@ -211,6 +261,10 @@ public:
 BINARY_REG(less_equal, 4, "<=");
 
 class greater_equal : public binary_operation {
+protected:
+    std::string getOp() override {
+        return ">=";
+    }
 public:
     using binary_operation::binary_operation;
 
@@ -222,6 +276,10 @@ public:
 BINARY_REG(greater_equal, 4, ">=");
 
 class bool_and : public binary_operation {
+protected:
+    std::string getOp() override {
+        return "&&";
+    }
 public:
     using binary_operation::binary_operation;
 
@@ -233,6 +291,10 @@ public:
 BINARY_REG(bool_and, 6, "&&");
 
 class bool_or : public binary_operation {
+protected:
+    std::string getOp() override {
+        return "||";
+    }
 public:
     using binary_operation::binary_operation;
 
@@ -244,10 +306,16 @@ public:
 BINARY_REG(bool_or, 7, "||");
 
 class unary_operation : public expression {
+protected:
+    virtual std::string getOp() = 0;
 public:
     const std::unique_ptr<expression> operand;
 
-    unary_operation(std::unique_ptr<expression> &&operand) : operand(std::move(operand)) {
+    explicit unary_operation(std::unique_ptr<expression> &&operand) : operand(std::move(operand)) {
+    }
+
+    std::string to_string() override {
+        return getOp() + "(" + operand->to_string() + ")";
     }
 };
 
@@ -266,6 +334,10 @@ static const unsigned op##_reg = [] { \
 }()
 
 class opposite : public unary_operation {
+protected:
+    std::string getOp() override {
+        return "-";
+    }
 public:
     using unary_operation::unary_operation;
 
@@ -277,6 +349,10 @@ public:
 UNARY_REG(opposite, 1, '-');
 
 class negate : public unary_operation {
+protected:
+    std::string getOp() override {
+        return "!";
+    }
 public:
     using unary_operation::unary_operation;
 
@@ -288,6 +364,10 @@ public:
 UNARY_REG(negate, 1, '!');
 
 class dereference : public unary_operation {
+protected:
+    std::string getOp() override {
+        return "*";
+    }
 public:
     using unary_operation::unary_operation;
 

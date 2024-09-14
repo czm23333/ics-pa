@@ -9,6 +9,8 @@ public:
     virtual ~expression() = default;
 
     virtual unsigned exec() = 0;
+
+    virtual std::string to_string() = 0;
 };
 
 std::unique_ptr<expression> parse_expr(unsigned levelLimit, std::string_view sv);

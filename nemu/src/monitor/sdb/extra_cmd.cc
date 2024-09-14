@@ -17,6 +17,11 @@ EXTERNC int cmd_info(char *args) {
     if (type == "r")
         isa_reg_display();
     else if (type == "w") {
+        size_t id = 1;
+        for (auto& watchpoint : watchpoints) {
+            printf("Watchpoint %lu: %s = %u\n", id, watchpoint.expr->to_string().c_str(), watchpoint.expr->exec());
+            ++id;
+        }
     } else printf("Unknown subcommand\n");
     return 0;
 }
