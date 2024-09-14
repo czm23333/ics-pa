@@ -92,6 +92,6 @@ EXTERNC int cmd_d(char *args) {
     }
     watchpoints.erase(iter);
 
-    printf("Removed watchpoint %d\n", N);
+    printf("Removed watchpoint %d\n", *oN);
     return 0;
 }
