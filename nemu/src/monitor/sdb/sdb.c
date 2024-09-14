@@ -69,7 +69,9 @@ static struct {
     {"si", "Execute exactly N instructions", cmd_si},
     {"info", "Show runtime info", cmd_info},
     {"x", "Display the content in memory", cmd_x},
-    {"p", "Evaluate expression", cmd_p}
+    {"p", "Evaluate expression", cmd_p},
+    {"w", "Add watchpoint", cmd_w},
+    {"d", "Remove watchpoint", cmd_d}
     /* TODO: Add more commands */
 
 };
