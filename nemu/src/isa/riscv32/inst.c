@@ -19,6 +19,7 @@
 #include <cpu/cpu.h>
 #include <cpu/ifetch.h>
 #include <cpu/decode.h>
+#include <cpu/syscall.h>
 
 #define R(i) gpr(i)
 #define Mr vaddr_read
@@ -141,6 +142,7 @@ static int decode_exec(Decode *s) {
         INSTPAT("0000001 ????? ????? 111 ????? 01100 11", remu, R, if (src2 == 0) R(rd) = src1;
                 else R(rd) = src1 % src2);
 
+        INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall, N, handle_syscall());
         INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak, N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
         INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv, N, INV(s->pc));
     INSTPAT_END();

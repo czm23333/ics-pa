@@ -17,8 +17,8 @@ SRCS-y += src/nemu-main.c
 DIRS-y += src/cpu src/monitor src/utils
 DIRS-$(CONFIG_MODE_SYSTEM) += src/memory
 DIRS-BLACKLIST-$(CONFIG_TARGET_AM) += src/monitor/sdb
-CXXSRC += $(shell find -L ./src -name "*.cc")
-CXXFLAGS := -std=c++17
+CXXSRC += $(shell find -L $(DIRS-y) -name "*.cc")
+CXXFLAGS += -std=c++17
 
 SHARE = $(if $(CONFIG_TARGET_SHARE),1,0)
 LIBS += $(if $(CONFIG_TARGET_NATIVE_ELF),-lreadline -ldl -pie,)
