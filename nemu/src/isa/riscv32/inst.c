@@ -64,21 +64,21 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
 }
 
 static int as_signed(unsigned x) {
-    int res = 0;
-    if (x & 0x80000000u) {
-        x = ~x + 1;
-        res -= x;
-    } else res += x;
-    return res;
+    union {
+        unsigned u;
+        int s;
+    } un;
+    un.u = x;
+    return un.s;
 }
 
 static unsigned as_unsigned(int x) {
-    unsigned res = 0;
-    if (x < 0) {
-        res = -x;
-        res = ~res + 1;
-    } else res = x;
-    return res;
+    union {
+        unsigned u;
+        int s;
+    } un;
+    un.s = x;
+    return un.u;
 }
 
 static int decode_exec(Decode *s) {
