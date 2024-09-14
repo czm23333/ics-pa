@@ -89,15 +89,11 @@ static const unsigned register_access_reg = [] {
     parsers[0].emplace_back([](unsigned, std::string_view sv) -> std::unique_ptr<expression> {
         if (sv.empty() || sv.front() != '$') return {};
         sv.remove_prefix(1);
-        std::string name;
-        while (!sv.empty()) {
-            name += sv.front();
-            sv.remove_prefix(1);
-            bool flag = false;
-            isa_reg_str2val(name.c_str(), &flag);
-            if (flag) return std::make_unique<register_access>(name);
-        }
-        return {};
+        std::string name = std::string(sv);
+        bool flag = false;
+        isa_reg_str2val(name.c_str(), &flag);
+        if (!flag) return {};
+        return std::make_unique<register_access>(name);
     });
     return 0;
 }();
