@@ -62,7 +62,7 @@ EXTERNC int cmd_w(char *args) {
         return 0;
     }
     watchpoints.emplace_back(std::move(expr));
-    printf("Added watchpoint %lu", watchpoints.size());
+    printf("Added watchpoint %lu\n", watchpoints.size());
     return 0;
 }
 
@@ -87,6 +87,6 @@ EXTERNC int cmd_d(char *args) {
     }
     watchpoints.erase(iter);
 
-    printf("Removed watchpoint %d", N);
+    printf("Removed watchpoint %d\n", N);
     return 0;
 }

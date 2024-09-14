@@ -11,7 +11,7 @@ bool check_watchpoints() {
     for (auto& watchpoint : watchpoints) {
         bool res = watchpoint.check();
         flag |= res;
-        if (res) printf("Watchpoint %lu hit", id);
+        if (res) printf("Watchpoint %lu hit\n", id);
         ++id;
     }
     return flag;
