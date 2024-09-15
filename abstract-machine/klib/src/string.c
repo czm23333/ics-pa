@@ -60,7 +60,14 @@ void *memcpy(void *out, const void *in, size_t n) {
 }
 
 int memcmp(const void *s1, const void *s2, size_t n) {
-    panic("Not implemented");
+    const unsigned char* p1 = s1;
+    const unsigned char* p2 = s2;
+    while (n--) {
+        unsigned char c1 = *p1++, c2 = *p2++;
+        if (c1 < c2) return -1;
+        if (c1 > c2) return 1;
+    }
+    return 0;
 }
 
 #endif
