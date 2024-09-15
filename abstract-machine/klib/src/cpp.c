@@ -13,7 +13,7 @@ void __cxa_guard_release() {
 }
 
 void __cxa_atexit() {
-  assert(0);
+    assert(0);
 }
 
 #endif
