@@ -26,6 +26,13 @@
  */
 #define MAX_INST_TO_PRINT 10
 
+#ifdef CONFIG_ITRACE
+#define NUM_INST_RING_BUF 20
+static char inst_ringbuf[NUM_INST_RING_BUF][128];
+static size_t inst_ringbuf_head = 0;
+static bool inst_ringbuf_filled = false;
+#endif
+
 CPU_state cpu = {};
 uint64_t g_nr_guest_inst = 0;
 static uint64_t g_timer = 0; // unit: us
@@ -65,6 +72,13 @@ static void exec_once(Decode *s, vaddr_t pc) {
     void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
     disassemble(p, s->logbuf + sizeof(s->logbuf) - p,
                 MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *) &s->isa.inst.val, ilen);
+
+    strcpy(inst_ringbuf[inst_ringbuf_head], s->logbuf);
+    ++inst_ringbuf_head;
+    if (inst_ringbuf_head >= NUM_INST_RING_BUF) {
+        inst_ringbuf_head = 0;
+        inst_ringbuf_filled = true;
+    }
 #endif
 }
 
@@ -91,8 +105,17 @@ static void statistic() {
         Log("Finish running in less than 1 us and can not calculate the simulation frequency");
 }
 
+#ifdef CONFIG_ITRACE
+static void output_traced_inst() {
+    if (inst_ringbuf_filled)
+        for (size_t ring_nxt = inst_ringbuf_head; ring_nxt < NUM_INST_RING_BUF; ++ring_nxt) printf("%s\n", inst_ringbuf[ring_nxt]);
+    for (size_t i = 0; i < inst_ringbuf_head; ++i) printf("%s\n", inst_ringbuf[i]);
+}
+#endif
+
 void assert_fail_msg() {
     isa_reg_display();
+    IFDEF(CONFIG_ITRACE, output_traced_inst());
     statistic();
 }
 
