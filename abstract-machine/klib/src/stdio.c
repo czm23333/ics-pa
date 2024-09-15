@@ -10,14 +10,23 @@ int printf(const char *fmt, ...) {
     panic("Not implemented");
 }
 
-static char* putInt(char* out, int val) {
+static char *putInt(char *out, int val) {
     if (val < 0) {
         *out++ = '-';
         val = -val;
     }
-    while (val) {
-        *out++ = '0' + val % 10;
-        val /= 10;
+    if (val == 0)
+        *out++ = '0';
+    else {
+        int bcnt = 0;
+        for (int tmp = val; tmp; tmp /= 10) ++bcnt;
+        char* nout = out + bcnt;
+        while (val) {
+            --bcnt;
+            out[bcnt] = '0' + val % 10;
+            val /= 10;
+        }
+        out = nout;
     }
     *out = '\0';
     return out;
@@ -30,15 +39,17 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
             ++fmt;
             if (*fmt == 0) continue;
             switch (*fmt) {
-                case 's':
-                    char* str = va_arg(ap, char *);
+                case 's': {
+                    char *str = va_arg(ap, char *);
                     strcpy(out, str);
                     out += strlen(str);
                     break;
+                }
                 case 'd':
-                case 'i':
+                case 'i': {
                     out = putInt(out, va_arg(ap, int));
                     break;
+                }
                 default:
                     break;
             }
