@@ -22,5 +22,5 @@ EXTERNC void onRet() {
 }
 
 EXTERNC void printStackTrace() {
-    for (const auto& entry : stacktrace) Log("%s: " FMT_PADDR "\n", entry.functionName.c_str(), entry.address);
+    for (const auto& entry : stacktrace) { Log("%s: " FMT_PADDR "\n", entry.functionName.c_str(), entry.address); }
 }
