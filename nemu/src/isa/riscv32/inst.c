@@ -39,10 +39,12 @@ enum {
 #define immJ() do { *imm = (SEXT(BITS(i, 31, 31), 1) << 20) | (BITS(i, 30, 21) << 1) | (BITS(i, 20, 20) << 11) | (BITS(i, 19, 12) << 12); } while(0)
 #define immB() do { *imm = (SEXT(BITS(i, 31, 31), 1) << 12) | (BITS(i, 30, 25) << 5) | (BITS(i, 11, 8) << 1) | (BITS(i, 7, 7) << 11); } while(0)
 
-static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, int type) {
+static void decode_operand(Decode *s, int* prs1, int* prs2, int *rd, word_t *src1, word_t *src2, word_t *imm, int type) {
     uint32_t i = s->isa.inst.val;
     int rs1 = BITS(i, 19, 15);
+    *prs1 = rs1;
     int rs2 = BITS(i, 24, 20);
+    *prs2 = rs2;
     *rd = BITS(i, 11, 7);
     switch (type) {
         case TYPE_I: src1R();
@@ -71,12 +73,13 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
 
 static int decode_exec(Decode *s) {
     int rd = 0;
+    int rs1, rs2 = 0;
     word_t src1 = 0, src2 = 0, imm = 0;
     s->dnpc = s->snpc;
 
 #define INSTPAT_INST(s) ((s)->isa.inst.val)
 #define INSTPAT_MATCH(s, name, type, ... /* execute body */ ) { \
-  decode_operand(s, &rd, &src1, &src2, &imm, concat(TYPE_, type)); \
+  decode_operand(s, &rs1, &rs2, &rd, &src1, &src2, &imm, concat(TYPE_, type)); \
   __VA_ARGS__ ; \
 }
 
@@ -109,7 +112,7 @@ static int decode_exec(Decode *s) {
         INSTPAT("??????? ????? ????? ??? ????? 11011 11", jal, J, R(rd) = s->snpc, s->dnpc = s->pc + imm;
                 if (rd == RA_INDEX) onCall(s->pc, s->dnpc));
         INSTPAT("??????? ????? ????? 000 ????? 11001 11", jalr, I, R(rd) = s->snpc, s->dnpc = (src1 + imm) >> 1u << 1u;
-                if (src1 == RA_INDEX && imm == 0) onRet();
+                if (rs1 == RA_INDEX && imm == 0) onRet();
                 else if (rd == RA_INDEX) onCall(s->pc, s->dnpc));
         INSTPAT("??????? ????? ????? 000 ????? 11000 11", beq, B, if (src1 == src2) s->dnpc = s->pc + imm);
         INSTPAT("??????? ????? ????? 001 ????? 11000 11", bne, B, if (src1 != src2) s->dnpc = s->pc + imm);
