@@ -17,7 +17,6 @@
 #include <cpu/cpu.h>
 #include <readline/readline.h>
 #include <readline/history.h>
-#include "sdb.h"
 #include "extra_cmd.h"
 
 static int is_batch_mode = false;
@@ -71,7 +70,8 @@ static struct {
     {"x", "Display the content in memory", cmd_x},
     {"p", "Evaluate expression", cmd_p},
     {"w", "Add watchpoint", cmd_w},
-    {"d", "Remove watchpoint", cmd_d}
+    {"d", "Remove watchpoint", cmd_d},
+    {"st", "Print stack trace", cmd_st}
     /* TODO: Add more commands */
 
 };

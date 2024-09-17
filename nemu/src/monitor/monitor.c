@@ -15,6 +15,7 @@
 
 #include <isa.h>
 #include <memory/paddr.h>
+#include <elf_parser.h>
 
 void init_rand();
 
@@ -48,6 +49,7 @@ void sdb_set_batch_mode();
 static char *log_file = NULL;
 static char *diff_so_file = NULL;
 static char *img_file = NULL;
+static char *elf_file = NULL;
 static int difftest_port = 1234;
 
 static long load_img() {
@@ -78,11 +80,12 @@ static int parse_args(int argc, char *argv[]) {
         {"log", required_argument, NULL, 'l'},
         {"diff", required_argument, NULL, 'd'},
         {"port", required_argument, NULL, 'p'},
+        {"elf", required_argument, NULL, 'e'},
         {"help", no_argument, NULL, 'h'},
         {0, 0, NULL, 0},
     };
     int o;
-    while ((o = getopt_long(argc, argv, "-bhl:d:p:", table, NULL)) != -1) {
+    while ((o = getopt_long(argc, argv, "-bhl:d:p:e:", table, NULL)) != -1) {
         switch (o) {
             case 'b': sdb_set_batch_mode();
                 break;
@@ -91,6 +94,8 @@ static int parse_args(int argc, char *argv[]) {
             case 'l': log_file = optarg;
                 break;
             case 'd': diff_so_file = optarg;
+                break;
+            case 'e': elf_file = optarg;
                 break;
             case 1: img_file = optarg;
                 return 0;
@@ -127,6 +132,8 @@ void init_monitor(int argc, char *argv[]) {
 
     /* Perform ISA dependent initialization. */
     init_isa();
+
+    load_elf(elf_file);
 
     /* Load the image to memory. This will overwrite the built-in image. */
     long img_size = load_img();

@@ -11,3 +11,5 @@ EXTERNC int cmd_p(char *args);
 EXTERNC int cmd_w(char *args);
 
 EXTERNC int cmd_d(char *args);
+
+EXTERNC int cmd_st(char *args);

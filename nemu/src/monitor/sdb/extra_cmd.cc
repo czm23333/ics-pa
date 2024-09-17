@@ -1,9 +1,10 @@
 #include "extra_cmd.h"
-#include "parser.h"
+#include "arg_parser.h"
 #include <cpu/cpu.h>
 
 #include "isa.h"
 #include "watchpoint.h"
+#include "cpu/stacktrace.h"
 #include "memory/vaddr.h"
 
 EXTERNC int cmd_si(char *args) {
@@ -93,5 +94,10 @@ EXTERNC int cmd_d(char *args) {
     watchpoints.erase(iter);
 
     printf("Removed watchpoint %d\n", *oN);
+    return 0;
+}
+
+EXTERNC int cmd_st(char *args) {
+    printStackTrace();
     return 0;
 }
