@@ -23,11 +23,12 @@
 #include <cpu/stacktrace.h>
 
 #define R(i) gpr(i)
+#define C(i) csr(i)
 #define Mr vaddr_read
 #define Mw vaddr_write
 
 enum {
-    TYPE_I, TYPE_U, TYPE_S, TYPE_R, TYPE_J, TYPE_B,
+    TYPE_I, TYPE_I2, TYPE_U, TYPE_S, TYPE_R, TYPE_J, TYPE_B,
     TYPE_N, // none
 };
 
@@ -39,7 +40,8 @@ enum {
 #define immJ() do { *imm = (SEXT(BITS(i, 31, 31), 1) << 20) | (BITS(i, 30, 21) << 1) | (BITS(i, 20, 20) << 11) | (BITS(i, 19, 12) << 12); } while(0)
 #define immB() do { *imm = (SEXT(BITS(i, 31, 31), 1) << 12) | (BITS(i, 30, 25) << 5) | (BITS(i, 11, 8) << 1) | (BITS(i, 7, 7) << 11); } while(0)
 
-static void decode_operand(Decode *s, int* prs1, int* prs2, int *rd, word_t *src1, word_t *src2, word_t *imm, int type) {
+static void decode_operand(Decode *s, int *prs1, int *prs2, int *rd, word_t *src1, word_t *src2, word_t *imm,
+                           int type) {
     uint32_t i = s->isa.inst.val;
     int rs1 = BITS(i, 19, 15);
     *prs1 = rs1;
@@ -48,6 +50,10 @@ static void decode_operand(Decode *s, int* prs1, int* prs2, int *rd, word_t *src
     *rd = BITS(i, 11, 7);
     switch (type) {
         case TYPE_I: src1R();
+            immI();
+            break;
+        case TYPE_I2:
+            *src1 = rs1;
             immI();
             break;
         case TYPE_U: immU();
@@ -69,6 +75,7 @@ static void decode_operand(Decode *s, int* prs1, int* prs2, int *rd, word_t *src
     }
 }
 
+#define X0_INDEX 0
 #define RA_INDEX 1
 
 static int decode_exec(Decode *s) {
@@ -153,6 +160,19 @@ static int decode_exec(Decode *s) {
 
         INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall, N, handle_syscall());
         INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak, N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
+
+        INSTPAT("??????? ????? ????? 001 ????? 11100 11", csrrw, I, if (rd != X0_INDEX) R(rd) = C(imm); C(imm) = src1);
+        INSTPAT("??????? ????? ????? 010 ????? 11100 11", csrrs, I,
+                if (rd != X0_INDEX) R(rd) = C(imm); if (rs1 != X0_INDEX) C(imm) |= src1);
+        INSTPAT("??????? ????? ????? 011 ????? 11100 11", csrrc, I,
+                if (rd != X0_INDEX) R(rd) = C(imm); if (rs1 != X0_INDEX) C(imm) &= ~src1);
+        INSTPAT("??????? ????? ????? 101 ????? 11100 11", csrrwi, I2,
+                if (rd != X0_INDEX) R(rd) = C(imm); C(imm) = src1);
+        INSTPAT("??????? ????? ????? 110 ????? 11100 11", csrrsi, I2,
+                if (rd != X0_INDEX) R(rd) = C(imm); C(imm) |= src1);
+        INSTPAT("??????? ????? ????? 111 ????? 11100 11", csrrci, I2,
+                if (rd != X0_INDEX) R(rd) = C(imm); C(imm) &= ~src1);
+
         INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv, N, INV(s->pc));
     INSTPAT_END();
 
