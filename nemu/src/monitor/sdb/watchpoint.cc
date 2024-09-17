@@ -13,7 +13,7 @@ bool check_watchpoints() {
     for (auto& watchpoint : watchpoints) {
         bool res = watchpoint.check();
         flag |= res;
-        if (res) Log("Watchpoint %lu hit\n", id);
+        if (res) Log("Watchpoint %lu hit", id);
         ++id;
     }
     return flag;
