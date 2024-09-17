@@ -3,6 +3,8 @@
 #include <cstdio>
 #include <cpu/watchpoint.h>
 
+#include "debug.h"
+
 std::list<watchpoint> watchpoints;
 
 bool check_watchpoints() {
@@ -11,7 +13,7 @@ bool check_watchpoints() {
     for (auto& watchpoint : watchpoints) {
         bool res = watchpoint.check();
         flag |= res;
-        if (res) printf("Watchpoint %lu hit\n", id);
+        if (res) Log("Watchpoint %lu hit\n", id);
         ++id;
     }
     return flag;

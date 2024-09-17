@@ -108,8 +108,8 @@ static void statistic() {
 #ifdef CONFIG_ITRACE
 static void output_traced_inst() {
     if (inst_ringbuf_filled)
-        for (size_t ring_nxt = inst_ringbuf_head; ring_nxt < NUM_INST_RING_BUF; ++ring_nxt) printf("%s\n", inst_ringbuf[ring_nxt]);
-    for (size_t i = 0; i < inst_ringbuf_head; ++i) printf("%s\n", inst_ringbuf[i]);
+        for (size_t ring_nxt = inst_ringbuf_head; ring_nxt < NUM_INST_RING_BUF; ++ring_nxt) Log("%s\n", inst_ringbuf[ring_nxt]);
+    for (size_t i = 0; i < inst_ringbuf_head; ++i) Log("%s\n", inst_ringbuf[i]);
 }
 #endif
 
