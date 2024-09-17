@@ -7,7 +7,13 @@
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
 int printf(const char *fmt, ...) {
-    panic("Not implemented");
+    static char buffer[4096];
+    va_list ap;
+    va_start(ap, fmt);
+    const int res = vsprintf(buffer, fmt, ap);
+    va_end(ap);
+    for (char *p = buffer; *p; p++) putch(*p);
+    return res;
 }
 
 static char *putInt(char *out, int val) {
@@ -63,15 +69,21 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 int sprintf(char *out, const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
-    return vsprintf(out, fmt, args);
+    const int res = vsprintf(out, fmt, args);
+    va_end(args);
+    return res;
 }
 
 int snprintf(char *out, size_t n, const char *fmt, ...) {
-    panic("Not implemented");
+    va_list args;
+    va_start(args, fmt);
+    const int res = vsprintf(out, fmt, args);
+    va_end(args);
+    return res;
 }
 
 int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
-    panic("Not implemented");
+    return vsprintf(out, fmt, ap);
 }
 
 #endif
