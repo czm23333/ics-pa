@@ -4,7 +4,8 @@
 typedef union {
     uint64_t time;
     struct {
-        uint32_t timeHigh, timeLow;
+        uint32_t timeLow;
+        uint32_t timeHigh;
     };
 } time_t;
 
