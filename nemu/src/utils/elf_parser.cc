@@ -23,14 +23,14 @@ extern "C" void load_elf(char* filePath) {
     fread(&elfHeader, sizeof(Elf32_Ehdr), 1, file);
     if (elfHeader.e_ident[EI_CLASS] != ELFCLASS32) return;
 
-    Elf32_Off strTableOffset = 0;
+    std::vector<char> strings;
     std::vector<Elf32_Sym> symbols;
     fseek(file, elfHeader.e_shoff, SEEK_SET);
     for (Elf32_Half i = 0; i < elfHeader.e_shnum; i++) {
         Elf32_Shdr table;
         fread(&table, sizeof(Elf32_Shdr), 1, file);
+        const auto cur = ftell(file);
         if (table.sh_type == SHT_SYMTAB) {
-            const auto cur = ftell(file);
             fseek(file, table.sh_offset, SEEK_SET);
             const auto numEntries = table.sh_size / table.sh_entsize;
             for (Elf32_Word j = 0; j < numEntries; j++) {
@@ -39,16 +39,19 @@ extern "C" void load_elf(char* filePath) {
                 if (ELF32_ST_TYPE(symbol.st_info) != STT_FUNC) continue;
                 symbols.emplace_back(symbol);
             }
-            fseek(file, cur, SEEK_SET);
-        } else if (table.sh_type == SHT_STRTAB)
-            strTableOffset = table.sh_offset;
+        } else if (table.sh_type == SHT_STRTAB) {
+            fseek(file, table.sh_offset, SEEK_SET);
+            const auto ptr = &*strings.insert(strings.end(), table.sh_size, '\0');
+            fread(ptr, sizeof(char), table.sh_size, file);
+        }
+        fseek(file, cur, SEEK_SET);
     }
 
     for (auto& function : symbols) {
         std::string name;
-        fseek(file, strTableOffset + function.st_name, SEEK_SET);
+        auto iter = strings.begin() + function.st_name;
         char c;
-        while ((c = fgetc(file)) != '\0') name += c;
+        while ((c = *iter++) != '\0') name += c;
         functions.emplace_back(name, function.st_value, function.st_size);
     }
 
