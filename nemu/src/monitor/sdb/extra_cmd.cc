@@ -98,6 +98,11 @@ EXTERNC int cmd_d(char *args) {
 }
 
 EXTERNC int cmd_st(char *args) {
+#ifdef CONFIG_STACK_TRACE
     printStackTrace();
+#else
+    Log("Stack trace is disabled.");
+#endif
+
     return 0;
 }

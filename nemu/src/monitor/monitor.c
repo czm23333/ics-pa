@@ -136,7 +136,7 @@ void init_monitor(int argc, char *argv[]) {
     init_isa();
 
     load_elf(elf_file);
-    onCall(0, cpu.pc);
+    IFDEF(CONFIG_STACK_TRACE, onCall(0, cpu.pc));
 
     /* Load the image to memory. This will overwrite the built-in image. */
     long img_size = load_img();
