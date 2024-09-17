@@ -17,6 +17,8 @@
 #include <memory/paddr.h>
 #include <elf_parser.h>
 
+#include "cpu/stacktrace.h"
+
 void init_rand();
 
 void init_log(const char *log_file);
@@ -134,6 +136,7 @@ void init_monitor(int argc, char *argv[]) {
     init_isa();
 
     load_elf(elf_file);
+    onCall(0, cpu.pc);
 
     /* Load the image to memory. This will overwrite the built-in image. */
     long img_size = load_img();
