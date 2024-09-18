@@ -20,7 +20,7 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
     /* Trigger an interrupt/exception with ``NO''.
      * Then return the address of the interrupt/exception vector.
      */
-    IFDEF(CONFIG_ETRACE, Log("Interruption " FMT_WORD " raised at " FMT_PADDR, NO, epc));
+    IFDEF(CONFIG_ETRACE, log_write("Interruption " FMT_WORD " raised at " FMT_PADDR, NO, epc));
     cpu.csr[MCAUSE_INDEX] = NO;
     cpu.csr[MEPC_INDEX] = epc;
 
