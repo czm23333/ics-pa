@@ -22,7 +22,7 @@ void __am_timer_init() {
 
 void __am_timer_uptime(AM_TIMER_UPTIME_T *uptime) {
     time_t now;
-    read_time(&now);
+read_time(&now);
     uptime->us = now.time - beginTime.time;
 }
 
