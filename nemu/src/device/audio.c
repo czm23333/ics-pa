@@ -60,7 +60,7 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
         spec.callback = audio_callback;
         audio_initialized = true;
     }
-    if (offset == reg_lock_flag && audio_initialized) {
+    if (offset == reg_lock_flag * sizeof(uint32_t) && audio_initialized) {
         if (audio_base[reg_lock_flag]) SDL_LockAudio();
         else SDL_UnlockAudio();
     }
