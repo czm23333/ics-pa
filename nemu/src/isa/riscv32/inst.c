@@ -156,9 +156,9 @@ static int decode_exec(Decode *s) {
         INSTPAT("0000001 ????? ????? 111 ????? 01100 11", remu, R, if (src2 == 0) R(rd) = src1;
                 else R(rd) = src1 % src2);
 
-        INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall, N, s->dnpc = isa_raise_intr(R(A7_INDEX), s->snpc));
+        INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall, N, s->dnpc = isa_raise_intr(R(A7_INDEX), s->pc));
         INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak, N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
-        INSTPAT("0011000 00010 00000 000 00000 11100 11", mret, N, s->dnpc = C(MEPC_INDEX));
+        INSTPAT("0011000 00010 00000 000 00000 11100 11", mret, N, s->dnpc = C(MEPC_INDEX) + 4);
 
         INSTPAT("??????? ????? ????? 001 ????? 11100 11", csrrw, I, if (rd != X0_INDEX) R(rd) = C(imm); C(imm) = src1);
         INSTPAT("??????? ????? ????? 010 ????? 11100 11", csrrs, I,
