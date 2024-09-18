@@ -16,6 +16,7 @@
 #include <common.h>
 #include <device/map.h>
 #include <SDL2/SDL.h>
+#include <threads.h>
 
 enum {
     reg_freq,
@@ -33,9 +34,10 @@ static uint8_t *sbuf = NULL;
 static uint32_t *audio_base = NULL;
 static bool audio_initialized = false;
 
-static volatile bool audio_callback_running = false;
+static mtx_t audio_mutex;
+
 static void SDLCALL audio_callback(void *userdata, Uint8 *stream, int len) {
-    audio_callback_running = true;
+    mtx_lock(&audio_mutex);
     memset(stream, 0, len);
     uint8_t *p = sbuf + audio_base[reg_pad], *end = sbuf + CONFIG_SB_SIZE;
     uint32_t output = audio_base[reg_count];
@@ -46,7 +48,7 @@ static void SDLCALL audio_callback(void *userdata, Uint8 *stream, int len) {
         *stream++ = *p++;
         if (p == end) p = sbuf;
     }
-    audio_callback_running = false;
+    mtx_unlock(&audio_mutex);
 }
 
 static void audio_io_handler(uint32_t offset, int len, bool is_write) {
@@ -66,15 +68,16 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
         audio_initialized = true;
     }
     if (offset == reg_lock_flag * sizeof(uint32_t) && audio_initialized) {
-        if (audio_base[reg_lock_flag]) {
-            while (audio_callback_running) {}
-            SDL_LockAudio();
-        }
-        else SDL_UnlockAudio();
+        if (audio_base[reg_lock_flag])
+            mtx_lock(&audio_mutex);
+        else
+            mtx_unlock(&audio_mutex);
     }
 }
 
 void init_audio() {
+    mtx_init(&audio_mutex, mtx_plain);
+
     uint32_t space_size = sizeof(uint32_t) * nr_reg;
     audio_base = (uint32_t *) new_space(space_size);
 #ifdef CONFIG_HAS_PORT_IO
