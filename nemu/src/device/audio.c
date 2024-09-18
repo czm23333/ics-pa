@@ -24,13 +24,46 @@ enum {
     reg_sbuf_size,
     reg_init,
     reg_count,
+    reg_pad,
+    reg_lock_flag,
     nr_reg
 };
 
 static uint8_t *sbuf = NULL;
 static uint32_t *audio_base = NULL;
+static bool audio_initialized = false;
+
+static void SDLCALL audio_callback(void *userdata, Uint8 *stream, int len) {
+    memset(stream, 0, len);
+    uint8_t *p = sbuf + audio_base[reg_pad], *end = sbuf + audio_base[reg_sbuf_size];
+    uint32_t output = audio_base[reg_count];
+    if (len < output) output = len;
+    audio_base[reg_count] -= output;
+    audio_base[reg_pad] += output, audio_base[reg_pad] %= audio_base[reg_sbuf_size];
+    while (output--) {
+        *stream++ = *p++;
+        if (p == end) p = sbuf;
+    }
+}
 
 static void audio_io_handler(uint32_t offset, int len, bool is_write) {
+    if (!is_write) return;
+    if (len != 4) return;
+    if (offset == reg_init * sizeof(uint32_t) && audio_base[reg_init] && !audio_initialized) {
+        SDL_InitSubSystem(SDL_INIT_AUDIO);
+        SDL_AudioSpec spec;
+        memset(&spec, 0, sizeof(spec));
+        spec.format = AUDIO_S16SYS;
+        spec.freq = audio_base[reg_freq];
+        spec.channels = audio_base[reg_channels];
+        spec.samples = audio_base[reg_samples];
+        spec.callback = audio_callback;
+        audio_initialized = true;
+    }
+    if (offset == reg_lock_flag && audio_initialized) {
+        if (audio_base[reg_lock_flag]) SDL_LockAudio();
+        else SDL_UnlockAudio();
+    }
 }
 
 void init_audio() {
@@ -43,5 +76,6 @@ void init_audio() {
 #endif
 
     sbuf = (uint8_t *) new_space(CONFIG_SB_SIZE);
+    audio_base[reg_sbuf_size] = CONFIG_SB_SIZE;
     add_mmio_map("audio-sbuf", CONFIG_SB_ADDR, sbuf, CONFIG_SB_SIZE, NULL);
 }
