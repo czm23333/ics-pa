@@ -33,17 +33,20 @@ static uint8_t *sbuf = NULL;
 static uint32_t *audio_base = NULL;
 static bool audio_initialized = false;
 
+static volatile bool audio_callback_running = false;
 static void SDLCALL audio_callback(void *userdata, Uint8 *stream, int len) {
+    audio_callback_running = true;
     memset(stream, 0, len);
-    uint8_t *p = sbuf + audio_base[reg_pad], *end = sbuf + audio_base[reg_sbuf_size];
+    uint8_t *p = sbuf + audio_base[reg_pad], *end = sbuf + CONFIG_SB_SIZE;
     uint32_t output = audio_base[reg_count];
     if (len < output) output = len;
     audio_base[reg_count] -= output;
-    audio_base[reg_pad] += output, audio_base[reg_pad] %= audio_base[reg_sbuf_size];
+    audio_base[reg_pad] += output, audio_base[reg_pad] %= CONFIG_SB_SIZE;
     while (output--) {
         *stream++ = *p++;
         if (p == end) p = sbuf;
     }
+    audio_callback_running = false;
 }
 
 static void audio_io_handler(uint32_t offset, int len, bool is_write) {
@@ -61,7 +64,10 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
         audio_initialized = true;
     }
     if (offset == reg_lock_flag * sizeof(uint32_t) && audio_initialized) {
-        if (audio_base[reg_lock_flag]) SDL_LockAudio();
+        if (audio_base[reg_lock_flag]) {
+            while (audio_callback_running) {}
+            SDL_LockAudio();
+        }
         else SDL_UnlockAudio();
     }
 }
