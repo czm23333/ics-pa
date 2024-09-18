@@ -15,14 +15,20 @@
 
 #include <isa.h>
 
-word_t isa_raise_intr(word_t NO, vaddr_t epc) {
-  /* TODO: Trigger an interrupt/exception with ``NO''.
-   * Then return the address of the interrupt/exception vector.
-   */
+#define MTVEC_INDEX 0x305
+#define MEPC_INDEX 0x341
+#define MCAUSE_INDEX 0x342
 
-  return 0;
+word_t isa_raise_intr(word_t NO, vaddr_t epc) {
+    /* Trigger an interrupt/exception with ``NO''.
+     * Then return the address of the interrupt/exception vector.
+     */
+    cpu.csr[MCAUSE_INDEX] = NO;
+    cpu.csr[MEPC_INDEX] = epc;
+
+    return cpu.csr[MTVEC_INDEX];
 }
 
 word_t isa_query_intr() {
-  return INTR_EMPTY;
+    return INTR_EMPTY;
 }
