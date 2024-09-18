@@ -18,6 +18,10 @@
 
 #include <common.h>
 
+#define X0_INDEX 0
+#define RA_INDEX 1
+#define A7_INDEX 17
+
 static inline int check_reg_idx(int idx) {
   IFDEF(CONFIG_RT_CHECK, assert(idx >= 0 && idx < MUXDEF(CONFIG_RVE, 16, 32)));
   return idx;

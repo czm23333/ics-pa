@@ -14,10 +14,7 @@
 ***************************************************************************************/
 
 #include <isa.h>
-
-#define MTVEC_INDEX 0x305
-#define MEPC_INDEX 0x341
-#define MCAUSE_INDEX 0x342
+#include "../local-include/csr.h"
 
 word_t isa_raise_intr(word_t NO, vaddr_t epc) {
     /* Trigger an interrupt/exception with ``NO''.
