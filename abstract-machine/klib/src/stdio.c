@@ -56,6 +56,10 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
                     out = putInt(out, va_arg(ap, int));
                     break;
                 }
+                case 'c': {
+                    *out++ = (char) va_arg(ap, int);
+                    break;
+                }
                 default:
                     break;
             }
