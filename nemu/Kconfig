@@ -156,14 +156,24 @@ config MTRACE
   bool "Enable memory tracer"
   default n
 
+config MTRACE_COND
+  depends on MTRACE
+  string "Only trace memory read and write when the condition is true"
+  default "true"
+
 config STACK_TRACE
   depends on TRACE && TARGET_NATIVE_ELF && ENGINE_INTERPRETER
   bool "Enable stack tracer"
   default y
 
-config MTRACE_COND
-  depends on MTRACE
-  string "Only trace memory read and write when the condition is true"
+config DTRACE
+  depends on TRACE && TARGET_NATIVE_ELF && ENGINE_INTERPRETER
+  bool "Enable device tracer"
+  default n
+
+config DTRACE_COND
+  depends on DTRACE
+  string "Only trace device read and write when the condition is true"
   default "true"
 
 

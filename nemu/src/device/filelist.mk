@@ -25,6 +25,8 @@ SRCS-$(CONFIG_HAS_SDCARD) += src/device/sdcard.c
 
 SRCS-BLACKLIST-$(CONFIG_TARGET_AM) += src/device/alarm.c
 
+CFLAGS_TRACE += -DDTRACE_COND=$(if $(CONFIG_DTRACE_COND),$(call remove_quote,$(CONFIG_DTRACE_COND)),true)
+
 ifdef CONFIG_DEVICE
 ifndef CONFIG_TARGET_AM
 LIBS += $(shell sdl2-config --libs)
