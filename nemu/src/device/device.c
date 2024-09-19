@@ -48,8 +48,10 @@ void vga_update_screen();
 static atomic_bool timer_trigger = false;
 
 void device_update() {
-    bool expected = true;
-    if (!atomic_compare_exchange_strong_explicit(&timer_trigger, &expected, false, memory_order_relaxed, memory_order_relaxed)) return;
+    if (!timer_trigger) return;
+    timer_trigger = false;
+    // bool expected = true;
+    // if (!atomic_compare_exchange_strong_explicit(&timer_trigger, &expected, false, memory_order_relaxed, memory_order_relaxed)) return;
 
     IFDEF(CONFIG_HAS_VGA, vga_update_screen());
 
@@ -85,7 +87,8 @@ void sdl_clear_event_queue() {
 
 static timer_t timer_id;
 void timer_callback(union sigval) {
-    atomic_store_explicit(&timer_trigger, true, memory_order_relaxed);
+    // atomic_store_explicit(&timer_trigger, true, memory_order_relaxed);
+    timer_trigger = true;
 }
 
 void register_timer() {
