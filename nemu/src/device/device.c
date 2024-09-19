@@ -50,7 +50,6 @@ static atomic_bool timer_trigger = false;
 void device_update() {
     bool expected = true;
     if (!atomic_compare_exchange_strong(&timer_trigger, &expected, false)) return;
-    printf("Update\n");
 
     IFDEF(CONFIG_HAS_VGA, vga_update_screen());
 
