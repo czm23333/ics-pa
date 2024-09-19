@@ -45,13 +45,11 @@ void send_key(uint8_t, bool);
 
 void vga_update_screen();
 
+static atomic_bool timer_trigger = false;
+
 void device_update() {
-    static uint64_t last = 0;
-    uint64_t now = get_time();
-    if (now - last < 1000000 / TIMER_HZ) {
-        return;
-    }
-    last = now;
+    bool expected = true;
+    if (!atomic_compare_exchange_strong(&timer_trigger, &expected, false)) return;
 
     IFDEF(CONFIG_HAS_VGA, vga_update_screen());
 
@@ -86,16 +84,20 @@ void sdl_clear_event_queue() {
 }
 
 static timer_t timer_id;
-atomic_bool timer_trigger = false;
 void timer_callback(union sigval) {
+    atomic_store(&timer_trigger, true);
 }
 
 void register_timer() {
-    struct sigevent event;
-    memset(&event, 0, sizeof(struct sigevent));
+    struct sigevent event = {0};
     event.sigev_notify = SIGEV_THREAD;
     event.sigev_notify_function = timer_callback;
     timer_create(CLOCK_MONOTONIC, &event, &timer_id);
+
+    struct itimerspec timer_spec = {0};
+    timer_spec.it_interval.tv_nsec = 1000000000l / TIMER_HZ;
+    timer_spec.it_value.tv_nsec = 1000000000l / TIMER_HZ;
+    timer_settime(timer_id, 0, &timer_spec, NULL);
 }
 
 void init_device() {
