@@ -20,6 +20,7 @@
 
 #define X0_INDEX 0
 #define RA_INDEX 1
+#define A0_INDEX 10
 #define A7_INDEX 17
 
 static inline int check_reg_idx(int idx) {
