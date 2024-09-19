@@ -16,6 +16,9 @@
 #include <common.h>
 #include <utils.h>
 #include <device/alarm.h>
+#include <signal.h>
+#include <time.h>
+#include <stdatomic.h>
 #ifndef CONFIG_TARGET_AM
 #include <SDL2/SDL.h>
 #endif
@@ -60,14 +63,14 @@ void device_update() {
                 nemu_state.state = NEMU_QUIT;
                 break;
 #ifdef CONFIG_HAS_KEYBOARD
-      // If a key was pressed
-      case SDL_KEYDOWN:
-      case SDL_KEYUP: {
-        uint8_t k = event.key.keysym.scancode;
-        bool is_keydown = (event.key.type == SDL_KEYDOWN);
-        send_key(k, is_keydown);
-        break;
-      }
+            // If a key was pressed
+            case SDL_KEYDOWN:
+            case SDL_KEYUP: {
+                uint8_t k = event.key.keysym.scancode;
+                bool is_keydown = (event.key.type == SDL_KEYDOWN);
+                send_key(k, is_keydown);
+                break;
+            }
 #endif
             default: break;
         }
@@ -80,6 +83,19 @@ void sdl_clear_event_queue() {
     SDL_Event event;
     while (SDL_PollEvent(&event));
 #endif
+}
+
+static timer_t timer_id;
+atomic_bool timer_trigger = false;
+void timer_callback(union sigval) {
+}
+
+void register_timer() {
+    struct sigevent event;
+    memset(&event, 0, sizeof(struct sigevent));
+    event.sigev_notify = SIGEV_THREAD;
+    event.sigev_notify_function = timer_callback;
+    timer_create(CLOCK_MONOTONIC, &event, &timer_id);
 }
 
 void init_device() {
