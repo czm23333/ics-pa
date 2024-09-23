@@ -30,8 +30,8 @@ int atoi(const char *nptr) {
 }
 
 typedef struct malloc_block_head {
-    struct malloc_block_head *pre = NULL, *next = NULL;
-    size_t size = 0;
+    struct malloc_block_head *pre, *next;
+    size_t size;
 } malloc_block_head;
 
 static malloc_block_head *first_block = NULL;
