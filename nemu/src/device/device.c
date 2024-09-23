@@ -45,11 +45,22 @@ void send_key(uint8_t, bool);
 
 void vga_update_screen();
 
+#ifndef CONFIG_TARGET_AM
 static atomic_bool timer_trigger = false;
+#endif
 
 void device_update() {
+#ifdef CONFIG_TARGET_AM
+    static uint64_t last = 0;
+    uint64_t now = get_time();
+    if (now - last < 1000000 / TIMER_HZ) {
+        return;
+    }
+    last = now;
+#else
     if (!timer_trigger) return;
     timer_trigger = false;
+#endif
 
     IFDEF(CONFIG_HAS_VGA, vga_update_screen());
 
@@ -83,6 +94,7 @@ void sdl_clear_event_queue() {
 #endif
 }
 
+#ifndef CONFIG_TARGET_AM
 static timer_t timer_id;
 void timer_callback(union sigval) {
     timer_trigger = true;
@@ -99,6 +111,7 @@ void register_timer() {
     timer_spec.it_value.tv_nsec = 1000000000l / TIMER_HZ;
     timer_settime(timer_id, 0, &timer_spec, NULL);
 }
+#endif
 
 void init_device() {
     IFDEF(CONFIG_TARGET_AM, ioe_init());
@@ -114,5 +127,5 @@ void init_device() {
 
     IFNDEF(CONFIG_TARGET_AM, init_alarm());
 
-    register_timer();
+    IFNDEF(CONFIG_TARGET_AM, register_timer());
 }
