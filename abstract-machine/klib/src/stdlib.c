@@ -42,6 +42,8 @@ static malloc_block_head *alloc_block(size_t size) {
     if (first_block == NULL) {
         if (relSize > sizeof(malloc_buffer)) return NULL;
         first_block = (malloc_block_head *) malloc_buffer;
+        first_block->pre = NULL;
+        first_block->next = NULL;
         first_block->size = size;
         return first_block;
     }
