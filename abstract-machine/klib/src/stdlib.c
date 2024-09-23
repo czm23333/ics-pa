@@ -42,7 +42,7 @@ static void *aligned_address(void *addr, size_t alignment) {
     return (void *) (((uintptr_t) addr + alignment - 1) & ~(alignment - 1));
 }
 
-static void *aligned_header_address(void* addr, size_t alignment) {
+static void *aligned_header_address(void *addr, size_t alignment) {
     return aligned_address(addr + sizeof(malloc_block_head), alignment) - sizeof(malloc_block_head);
 }
 
