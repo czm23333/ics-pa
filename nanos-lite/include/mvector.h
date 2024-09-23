@@ -6,7 +6,7 @@
 template <typename T>
 class mvector {
     static T* alloc_storage(size_t count) {
-        return static_cast<T*>(malloc(count * sizeof(T)));
+        return static_cast<T*>(aligned_alloc(alignof(T), count * sizeof(T)));
     }
 
     static void free_storage(T* ptr, size_t count) {

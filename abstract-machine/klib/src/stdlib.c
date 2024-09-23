@@ -47,7 +47,7 @@ static void *aligned_header_address(void *addr, size_t alignment) {
 }
 
 static malloc_block_head *alloc_block(size_t size, size_t alignment) {
-    if (alignment < sizeof(malloc_block_head)) return NULL;
+    if (alignment < alignof(malloc_block_head)) alignment = alignof(malloc_block_head);
 
     size_t relSize = size + sizeof(malloc_block_head);
     if (first_block == NULL) {
