@@ -56,14 +56,14 @@ static malloc_block_head *alloc_block(size_t size) {
         if (curSize >= relSize && curSize < validSize) {
             validSize = curSize;
             pre_block = NULL;
-            cur_block = malloc_buffer;
+            cur_block = (malloc_block_head*) malloc_buffer;
             next_block = first_block;
         }
     }
 
     for (malloc_block_head *block = first_block; block != NULL; block = block->next) {
         char *block_end = (char *) block + sizeof(malloc_block_head) + block->size;
-        char *region_end = block->next == NULL ? malloc_buffer + sizeof(malloc_buffer) : block->next;
+        char *region_end = block->next == NULL ? malloc_buffer + sizeof(malloc_buffer) : (char*) block->next;
         size_t empty = region_end - block_end;
         if (empty >= relSize && empty < validSize) {
             validSize = empty;
