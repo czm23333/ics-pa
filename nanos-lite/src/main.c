@@ -7,8 +7,6 @@ void init_irq(void);
 void init_fs(void);
 void init_proc(void);
 
-void test();
-
 int main() {
   extern const char logo[];
   printf("%s", logo);
