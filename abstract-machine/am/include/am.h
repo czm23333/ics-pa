@@ -65,7 +65,7 @@ Context *kcontext    (Area kstack, void (*entry)(void *), void *arg);
 bool     vme_init    (void *(*pgalloc)(int), void (*pgfree)(void *));
 void     protect     (AddrSpace *as);
 void     unprotect   (AddrSpace *as);
-void     map         (AddrSpace *as, void *vaddr, void *paddr, int prot);
+void     map         (AddrSpace *as, void *vaddr, void *paddr, uint32_t prot);
 Context *ucontext    (AddrSpace *as, Area kstack, void *entry);
 
 // ---------------------- MPE: Multi-Processing ----------------------

@@ -278,7 +278,7 @@ break; \
                         case 0b00000:
                             INST_CHECK(6, 0b0000000)
                             INST_RESOLVE("0000000 00000 00000 000 00000 11100 11", ecall, N,
-                                         s->dnpc = isa_raise_intr(R(A7_INDEX), s->pc))
+                                         s->dnpc = isa_raise_intr(MCAUSE_ECALL, s->pc))
                         case 0b00001:
                             INST_CHECK(6, 0b0000000)
                             INST_RESOLVE("0000000 00001 00000 000 00000 11100 11", ebreak, N,

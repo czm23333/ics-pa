@@ -16,7 +16,25 @@
 #include <isa.h>
 #include <memory/vaddr.h>
 #include <memory/paddr.h>
+#include "../local-include/csr.h"
+
+int isa_mmu_check(vaddr_t vaddr, int len, int type) {
+    SATPParts satp;
+    satp.val = cpu.csr[SATP_INDEX];
+    if (satp.MODE == 0) return MMU_DIRECT;
+    return MMU_TRANSLATE;
+}
 
 paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
-  return MEM_RET_FAIL;
+    if (isa_mmu_check(vaddr, len, type) == MMU_DIRECT) return vaddr;
+
+    SATPParts satp;
+    satp.val = cpu.csr[SATP_INDEX];
+    Sv32VAParts vaParts;
+    vaParts.val = vaddr;
+    Sv32PTE *pe1 = (Sv32PTE *) (satp.PPN * PAGE_SIZE + vaParts.pageNumber1 * sizeof(Sv32PTE));
+    if (!pe1->priv.V) panic("page fault at " FMT_PADDR, vaddr);
+    Sv32PTE *pe2 = (Sv32PTE *) (pe1->PPN * PAGE_SIZE + vaParts.pageNumber2 * sizeof(Sv32PTE));
+    if (!pe2->priv.V) panic("page fault at " FMT_PADDR, vaddr);
+    return pe2->PPN * PAGE_SIZE + vaParts.pageOffset;
 }
