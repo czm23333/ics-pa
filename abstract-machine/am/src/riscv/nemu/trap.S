@@ -40,10 +40,15 @@ f(30) f(31)
 #define EN_INTR csrsi mstatus, 8
 #define DIS_INTR csrci mstatus, 8
 
+#define NESTED_INTR_LIMIT 4
+#define INTR_RUNNING_STACK_SIZE_LOG2 12
+#define INTR_RUNNING_STACK_SIZE 4096
+nest_cnt: .word 0
+intr_running_stacks: .zero INTR_RUNNING_STACK_SIZE * NESTED_INTR_LIMIT
+
 .align 3
 .globl __am_asm_trap
 __am_asm_trap:
-  DIS_INTR
   csrrw sp, mscratch, sp
   addi sp, sp, -CONTEXT_SIZE
 
@@ -68,10 +73,31 @@ __am_asm_trap:
   csrw mstatus, t1
 
   mv a0, sp
+
+  # increase nest level, set intr running stack
+  la t2, nest_cnt
+  LOAD t0, 0(t2)
+  slli t1, t0, INTR_RUNNING_STACK_SIZE_LOG2
+  addi t0, t0, 1
+  STORE t0, 0(t2)
+  la t2, intr_running_stacks
+  add sp, t1, t2
+
+  # enable intr if we haven't hit the limit
+  li t2, NESTED_INTR_LIMIT
+  bge t0, t2, no_intr
   EN_INTR
+
+no_intr:
   call __am_irq_handle
   DIS_INTR
   mv sp, a0
+
+  # decrease nest level
+  la t1, nest_cnt
+  LOAD t0, 0(t1)
+  addi t0, t0, -1
+  STORE t0, 0(t1)
 
   LOAD t1, OFFSET_STATUS(sp)
   LOAD t2, OFFSET_EPC(sp)
@@ -88,5 +114,4 @@ __am_asm_trap:
 
   # set new sp, save intr sp
   csrrw sp, mscratch, sp
-  EN_INTR
   mret
