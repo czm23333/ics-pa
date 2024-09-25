@@ -44,6 +44,9 @@ bool cte_init(Context *(*handler)(Event, Context *)) {
     // register event handler
     user_handler = handler;
 
+    // enable intr
+    iset(true);
+
     return true;
 }
 
@@ -71,8 +74,14 @@ void yield() {
 }
 
 bool ienabled() {
-    return false;
+    MSTATUSParts mstatus;
+    asm volatile("csrr %0, mstatus" : "=r"(mstatus.val));
+    return mstatus.MIE;
 }
 
 void iset(bool enable) {
+    MSTATUSParts mstatus;
+    asm volatile("csrr %0, mstatus" : "=r"(mstatus.val));
+    mstatus.MIE = enable;
+    asm volatile("csrw mstatus, %0" : : "r"(mstatus.val));
 }
