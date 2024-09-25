@@ -33,7 +33,7 @@ static char default_intr_stack[4096];
 bool cte_init(Context *(*handler)(Event, Context *)) {
     // initialize exception entry
     asm volatile("csrw mtvec, %0" : : "r"(__am_asm_trap));
-    asm volatile("csrw mscratch, %0" : : "r"(default_intr_stack));
+    asm volatile("csrw mscratch, %0" : : "r"(default_intr_stack + sizeof(default_intr_stack)));
 
     // register event handler
     user_handler = handler;
