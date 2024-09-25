@@ -55,7 +55,6 @@ static atomic_bool intr_timer_trigger = false;
 #endif
 
 void device_update() {
-    Log("DUPD");
 #ifdef CONFIG_TARGET_AM
     static uint64_t last = 0;
     uint64_t now = get_time();
@@ -140,6 +139,7 @@ void register_timer(timer_t* timer_id, void(*callback)(__sigval_t), __syscall_sl
 }
 
 void register_update_timer() {
+    Log("DUPD");
     register_timer(&update_timer_id, update_timer_callback, 1000000000l / TIMER_HZ);
 }
 
