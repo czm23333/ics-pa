@@ -117,12 +117,12 @@ void sdl_clear_event_queue() {
 
 #ifndef CONFIG_TARGET_AM
 static timer_t update_timer_id;
-void update_timer_callback(__sigval_t) {
+void update_timer_callback(union sigval) {
     update_timer_trigger = true;
 }
 
 static timer_t intr_timer_id;
-void intr_timer_callback(__sigval_t) {
+void intr_timer_callback(union sigval) {
     intr_timer_trigger = true;
 }
 
