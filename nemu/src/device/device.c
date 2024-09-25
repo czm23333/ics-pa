@@ -104,7 +104,7 @@ void check_timer_intr() {
     if (!intr_timer_trigger) return;
     intr_timer_trigger = false;
 #endif
-    
+
     dev_raise_intr();
 }
 
