@@ -162,5 +162,5 @@ void init_device() {
     IFNDEF(CONFIG_TARGET_AM, init_alarm());
 
     IFNDEF(CONFIG_TARGET_AM, register_update_timer());
-    IFNDEF(CONFIG_TARGET_AM, register_intr_timer());
+    //IFNDEF(CONFIG_TARGET_AM, register_intr_timer());
 }
