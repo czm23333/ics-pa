@@ -67,6 +67,7 @@ void device_update() {
     update_timer_trigger = false;
 #endif
 
+    Log("updated");
     IFDEF(CONFIG_HAS_VGA, vga_update_screen());
 
 #ifndef CONFIG_TARGET_AM
