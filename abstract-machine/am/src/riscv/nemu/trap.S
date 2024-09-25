@@ -84,7 +84,12 @@ __am_asm_trap:
   la t2, intr_running_stacks_end
   sub sp, t2, t1
 
-  # enable intr if we haven't hit the limit
+  # enable intr if we should
+  # check MPIE
+  csrr t2, mstatus
+  andi t2, t2, 0x80
+  beqz t2, no_intr
+  # check nest limit
   li t2, NESTED_INTR_LIMIT
   bge t0, t2, no_intr
   EN_INTR

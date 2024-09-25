@@ -16,6 +16,8 @@
 #include <isa.h>
 #include "../local-include/csr.h"
 
+#define IRQ_TIMER 0x80000007
+
 word_t isa_raise_intr(word_t NO, vaddr_t epc) {
     /* Trigger an interrupt/exception with ``NO''.
      * Then return the address of the interrupt/exception vector.
@@ -24,9 +26,32 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
     cpu.csr[MCAUSE_INDEX] = NO;
     cpu.csr[MEPC_INDEX] = epc;
 
+    MSTATUSParts mstatus;
+    mstatus.val = cpu.csr[MSTATUS_INDEX];
+    mstatus.MPIE = mstatus.MIE;
+    mstatus.MIE = 0;
+    cpu.csr[MSTATUS_INDEX] = mstatus.val;
+
     return cpu.csr[MTVEC_INDEX];
 }
 
+vaddr_t isa_ret_from_intr() {
+    MSTATUSParts mstatus;
+    mstatus.val = cpu.csr[MSTATUS_INDEX];
+    mstatus.MIE = mstatus.MPIE;
+    cpu.csr[MSTATUS_INDEX] = mstatus.val;
+
+    return cpu.csr[MEPC_INDEX];
+}
+
 word_t isa_query_intr() {
+    MSTATUSParts mstatus;
+    mstatus.val = cpu.csr[MSTATUS_INDEX];
+    if (!mstatus.MIE) return INTR_EMPTY;
+
+    if (cpu.intr) {
+        cpu.intr = false;
+        return IRQ_TIMER;
+    }
     return INTR_EMPTY;
 }

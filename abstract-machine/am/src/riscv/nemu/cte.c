@@ -1,6 +1,8 @@
 #include <am.h>
 #include <klib.h>
 
+#define IRQ_TIMER 0x80000007
+
 static Context * (*user_handler)(Event, Context *) = NULL;
 
 Context *__am_irq_handle(Context *c) {
@@ -12,6 +14,10 @@ Context *__am_irq_handle(Context *c) {
                 c->mepc += 4;
                 if (c->GPR1 == -1) ev.event = EVENT_YIELD;
                 else ev.event = EVENT_SYSCALL;
+                break;
+            }
+            case IRQ_TIMER: {
+                ev.event = EVENT_IRQ_TIMER;
                 break;
             }
             default: ev.event = EVENT_ERROR;
@@ -47,6 +53,12 @@ Context *kcontext(Area kstack, Area kRunningStack, void (*entry)(void *), void *
     ptr->mepc = (uintptr_t) entry;
     ptr->gpr[2] = (uintptr_t) kRunningStack.end; // sp
     ptr->gpr[10] = (uintptr_t) arg; // a0
+
+    // Enable intr
+    MSTATUSParts mstatus;
+    mstatus.val = ptr->mstatus;
+    mstatus.MPIE = 1;
+    ptr->mstatus = mstatus.val;
     return ptr;
 }
 

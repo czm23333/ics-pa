@@ -22,6 +22,7 @@ typedef struct {
     word_t gpr[MUXDEF(CONFIG_RVE, 16, 32)];
     vaddr_t pc;
     word_t csr[4096];
+    bool intr;
 } MUXDEF(CONFIG_RV64, riscv64_CPU_state, riscv32_CPU_state);
 
 // decode
@@ -36,11 +37,21 @@ typedef struct {
 #define MCAUSE_LOAD_PAGE_FAULT 13
 #define MCAUSE_STORE_PAGE_FAULT 15
 
+// mstatus
+typedef union MSTATUSParts {
+    uint32_t val;
+
+    struct {
+        uint32_t : 3, MIE: 1, : 3, MPIE: 1,: 24;
+    };
+} MSTATUSParts;
+
 // virtual memory
 typedef union SATPParts {
     uint32_t val;
+
     struct {
-        uint32_t PPN : 22, ASID : 9, MODE : 1;
+        uint32_t PPN: 22, ASID: 9, MODE: 1;
     };
 } SATPParts;
 

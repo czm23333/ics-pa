@@ -39,6 +39,7 @@ static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
 
 void device_update();
+void check_timer_intr();
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
@@ -53,6 +54,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
     s->snpc = pc;
     isa_exec_once(s);
     cpu.pc = s->dnpc;
+
 #ifdef CONFIG_ITRACE
     char *p = s->logbuf;
     p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
@@ -91,6 +93,10 @@ static void execute(uint64_t n) {
         IFDEF(CONFIG_WATCHPOINT, if (check_watchpoints()) break);
         if (nemu_state.state != NEMU_RUNNING) break;
         IFDEF(CONFIG_DEVICE, device_update());
+        IFDEF(CONFIG_DEVICE, check_timer_intr());
+
+        word_t intr = isa_query_intr();
+        if (intr != INTR_EMPTY) cpu.pc = isa_raise_intr(intr, cpu.pc);
     }
 }
 

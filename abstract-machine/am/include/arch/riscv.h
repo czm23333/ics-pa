@@ -18,6 +18,14 @@ struct Context {
     uintptr_t mcause, mstatus, mepc;
 };
 
+typedef union MSTATUSParts {
+    uint32_t val;
+
+    struct {
+        uint32_t : 3, MIE: 1, : 3, MPIE: 1,: 24;
+    };
+} MSTATUSParts;
+
 typedef union SATPParts {
     uint32_t val;
     struct {

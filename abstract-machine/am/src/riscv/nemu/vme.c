@@ -137,5 +137,11 @@ Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
     ptr->mepc = (uintptr_t) entry;
     ptr->gpr[2] = (uintptr_t) kstack.end; // sp
     ptr->pdir = as->ptr;
+
+    // Enable intr
+    MSTATUSParts mstatus;
+    mstatus.val = ptr->mstatus;
+    mstatus.MPIE = 1;
+    ptr->mstatus = mstatus.val;
     return ptr;
 }

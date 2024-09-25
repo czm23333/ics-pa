@@ -19,6 +19,8 @@
 #include <signal.h>
 #include <time.h>
 #include <stdatomic.h>
+
+#include "isa.h"
 #ifndef CONFIG_TARGET_AM
 #include <SDL2/SDL.h>
 #endif
@@ -45,8 +47,11 @@ void send_key(uint8_t, bool);
 
 void vga_update_screen();
 
+void dev_raise_intr();
+
 #ifndef CONFIG_TARGET_AM
-static atomic_bool timer_trigger = false;
+static atomic_bool update_timer_trigger = false;
+static atomic_bool intr_timer_trigger = false;
 #endif
 
 void device_update() {
@@ -58,8 +63,8 @@ void device_update() {
     }
     last = now;
 #else
-    if (!timer_trigger) return;
-    timer_trigger = false;
+    if (!update_timer_trigger) return;
+    update_timer_trigger = false;
 #endif
 
     IFDEF(CONFIG_HAS_VGA, vga_update_screen());
@@ -87,6 +92,22 @@ void device_update() {
 #endif
 }
 
+void check_timer_intr() {
+#ifdef CONFIG_TARGET_AM
+    static uint64_t last = 0;
+    uint64_t now = get_time();
+    if (now - last < 10000) {
+        return;
+    }
+    last = now;
+#else
+    if (!intr_timer_trigger) return;
+    intr_timer_trigger = false;
+#endif
+
+    dev_raise_intr();
+}
+
 void sdl_clear_event_queue() {
 #ifndef CONFIG_TARGET_AM
     SDL_Event event;
@@ -95,21 +116,34 @@ void sdl_clear_event_queue() {
 }
 
 #ifndef CONFIG_TARGET_AM
-static timer_t timer_id;
-void timer_callback(union sigval) {
-    timer_trigger = true;
+static timer_t update_timer_id;
+void update_timer_callback(__sigval_t) {
+    update_timer_trigger = true;
 }
 
-void register_timer() {
+static timer_t intr_timer_id;
+void intr_timer_callback(__sigval_t) {
+    intr_timer_trigger = true;
+}
+
+void register_timer(timer_t* timer_id, void(*callback)(__sigval_t), __syscall_slong_t interval) {
     struct sigevent event = {0};
     event.sigev_notify = SIGEV_THREAD;
-    event.sigev_notify_function = timer_callback;
-    timer_create(CLOCK_MONOTONIC, &event, &timer_id);
+    event.sigev_notify_function = callback;
+    timer_create(CLOCK_MONOTONIC, &event, timer_id);
 
     struct itimerspec timer_spec = {0};
-    timer_spec.it_interval.tv_nsec = 1000000000l / TIMER_HZ;
-    timer_spec.it_value.tv_nsec = 1000000000l / TIMER_HZ;
+    timer_spec.it_interval.tv_nsec = interval;
+    timer_spec.it_value.tv_nsec = interval;
     timer_settime(timer_id, 0, &timer_spec, NULL);
+}
+
+void register_update_timer() {
+    register_timer(&update_timer_id, update_timer_callback, 1000000000l / TIMER_HZ);
+}
+
+void register_intr_timer() {
+    register_timer(&intr_timer_id, intr_timer_callback, 10000000l);
 }
 #endif
 
@@ -127,5 +161,6 @@ void init_device() {
 
     IFNDEF(CONFIG_TARGET_AM, init_alarm());
 
-    IFNDEF(CONFIG_TARGET_AM, register_timer());
+    IFNDEF(CONFIG_TARGET_AM, register_update_timer());
+    IFNDEF(CONFIG_TARGET_AM, register_intr_timer());
 }

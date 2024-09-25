@@ -56,6 +56,7 @@ EXTERNC paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type);
 
 // interrupt/exception
 EXTERNC vaddr_t isa_raise_intr(word_t NO, vaddr_t epc);
+EXTERNC vaddr_t isa_ret_from_intr();
 
 #define INTR_EMPTY ((word_t)-1)
 

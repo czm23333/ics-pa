@@ -286,7 +286,7 @@ break; \
                         case 0b00010:
                             INST_CHECK(6, 0b0011000)
                             INST_RESOLVE("0011000 00010 00000 000 00000 11100 11", mret, N,
-                                         s->dnpc = C(MEPC_INDEX))
+                                         s->dnpc = isa_ret_from_intr())
                         default: INST_INV()
                     }
                     break;
