@@ -50,8 +50,16 @@ bool cte_init(Context *(*handler)(Event, Context *)) {
     return true;
 }
 
-Context *kcontext(Area kstack, Area kRunningStack, void (*entry)(void *), void *arg) {
-    Context* ptr = kstack.end - sizeof(Context);
+Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
+    size_t kstackSize = kstack.end - kstack.start;
+    void *kstackMid = kstack.start + kstackSize / 2;
+    Area relKstack = {kstack.start, kstackMid};
+    Area relKrunningStack = {kstackMid, kstack.end};
+    return kcontext_ex(relKstack, relKrunningStack, entry, arg);
+}
+
+Context *kcontext_ex(Area kstack, Area kRunningStack, void (*entry)(void *), void *arg) {
+    Context *ptr = kstack.end - sizeof(Context);
     memset(ptr, 0, sizeof(Context));
     ptr->mepc = (uintptr_t) entry;
     ptr->gpr[2] = (uintptr_t) kRunningStack.end; // sp

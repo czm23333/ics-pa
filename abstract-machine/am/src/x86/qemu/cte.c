@@ -135,7 +135,7 @@ void iset(bool enable) {
 
 void __am_panic_on_return() { panic("kernel context returns"); }
 
-Context* kcontext(Area kstack, void (*entry)(void *), void *arg) {
+Context* kcontext_ex(Area kstack, void (*entry)(void *), void *arg) {
   Context *ctx = kstack.end - sizeof(Context);
   *ctx = (Context) { 0 };
 
