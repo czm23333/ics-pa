@@ -135,6 +135,7 @@ Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
     Context* ptr = kstack.end - sizeof(Context);
     memset(ptr, 0, sizeof(Context));
     ptr->mepc = (uintptr_t) entry;
+    ptr->gpr[2] = (uintptr_t) kstack.end; // sp
     ptr->pdir = as->ptr;
     return ptr;
 }

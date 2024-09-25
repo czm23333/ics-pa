@@ -28,9 +28,12 @@ Context *__am_irq_handle(Context *c) {
 
 extern void __am_asm_trap(void);
 
+static char default_intr_stack[4096];
+
 bool cte_init(Context *(*handler)(Event, Context *)) {
     // initialize exception entry
     asm volatile("csrw mtvec, %0" : : "r"(__am_asm_trap));
+    asm volatile("csrw mscratch, %0" : : "r"(default_intr_stack));
 
     // register event handler
     user_handler = handler;
@@ -38,10 +41,11 @@ bool cte_init(Context *(*handler)(Event, Context *)) {
     return true;
 }
 
-Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
+Context *kcontext(Area kstack, Area kRunningStack, void (*entry)(void *), void *arg) {
     Context* ptr = kstack.end - sizeof(Context);
     memset(ptr, 0, sizeof(Context));
     ptr->mepc = (uintptr_t) entry;
+    ptr->gpr[2] = (uintptr_t) kRunningStack.end; // sp
     ptr->gpr[10] = (uintptr_t) arg; // a0
     return ptr;
 }

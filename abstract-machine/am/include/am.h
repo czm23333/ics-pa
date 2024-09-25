@@ -59,7 +59,7 @@ bool     cte_init    (Context *(*handler)(Event ev, Context *ctx));
 void     yield       (void);
 bool     ienabled    (void);
 void     iset        (bool enable);
-Context *kcontext    (Area kstack, void (*entry)(void *), void *arg);
+Context *kcontext    (Area kstack, Area kRunningStack, void (*entry)(void *), void *arg);
 
 // ----------------------- VME: Virtual Memory -----------------------
 bool     vme_init        (void *(*pgalloc)(int), void (*pgfree)(void *));

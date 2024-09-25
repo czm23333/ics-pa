@@ -37,15 +37,22 @@ f(30) f(31)
 #define OFFSET_STATUS ((NR_REGS + 1) * XLEN)
 #define OFFSET_EPC    ((NR_REGS + 2) * XLEN)
 
-cstack: .zero 64 * 1024
-cstack_top:
+#define EN_INTR csrsi mstatus, 8
+#define DIS_INTR csrci mstatus, 8
 
 .align 3
 .globl __am_asm_trap
 __am_asm_trap:
+  DIS_INTR
+  csrrw sp, mscratch, sp
   addi sp, sp, -CONTEXT_SIZE
 
   MAP(REGS, PUSH)
+  # save previous sp
+  csrr a0, mscratch
+  STORE a0, (2 * XLEN)(sp)
+  # set new intr sp
+  csrw mscratch, sp
 
   csrr t0, mcause
   csrr t1, mstatus
@@ -61,8 +68,9 @@ __am_asm_trap:
   csrw mstatus, t1
 
   mv a0, sp
-  la sp, cstack_top
+  EN_INTR
   call __am_irq_handle
+  DIS_INTR
   mv sp, a0
 
   LOAD t1, OFFSET_STATUS(sp)
@@ -70,7 +78,15 @@ __am_asm_trap:
   csrw mstatus, t1
   csrw mepc, t2
 
+  # load new sp
+  LOAD a0, (2 * XLEN)(sp)
+  csrw mscratch, a0
+
   MAP(REGS, POP)
 
   addi sp, sp, CONTEXT_SIZE
+
+  # set new sp, save intr sp
+  csrrw sp, mscratch, sp
+  EN_INTR
   mret
