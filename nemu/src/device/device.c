@@ -119,12 +119,12 @@ void sdl_clear_event_queue() {
 static timer_t update_timer_id;
 void update_timer_callback(__sigval_t) {
     update_timer_trigger = true;
-    Log("tmp");
 }
 
 static timer_t intr_timer_id;
 void intr_timer_callback(__sigval_t) {
     intr_timer_trigger = true;
+    Log("tmp");
 }
 
 void register_timer(timer_t* timer_id, void(*callback)(__sigval_t), __syscall_slong_t interval) {
@@ -163,5 +163,5 @@ void init_device() {
     IFNDEF(CONFIG_TARGET_AM, init_alarm());
 
     IFNDEF(CONFIG_TARGET_AM, register_update_timer());
-    //IFNDEF(CONFIG_TARGET_AM, register_intr_timer());
+    IFNDEF(CONFIG_TARGET_AM, register_intr_timer());
 }
