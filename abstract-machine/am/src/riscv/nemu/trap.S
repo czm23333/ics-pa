@@ -45,6 +45,7 @@ f(30) f(31)
 #define INTR_RUNNING_STACK_SIZE 4096
 nest_cnt: .word 0
 intr_running_stacks: .zero INTR_RUNNING_STACK_SIZE * NESTED_INTR_LIMIT
+intr_running_stacks_end:
 
 .align 3
 .globl __am_asm_trap
@@ -80,8 +81,8 @@ __am_asm_trap:
   slli t1, t0, INTR_RUNNING_STACK_SIZE_LOG2
   addi t0, t0, 1
   STORE t0, 0(t2)
-  la t2, intr_running_stacks
-  add sp, t1, t2
+  la t2, intr_running_stacks_end
+  sub sp, t2, t1
 
   # enable intr if we haven't hit the limit
   li t2, NESTED_INTR_LIMIT
