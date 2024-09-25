@@ -55,6 +55,7 @@ static atomic_bool intr_timer_trigger = false;
 #endif
 
 void device_update() {
+    Log("DUPD");
 #ifdef CONFIG_TARGET_AM
     static uint64_t last = 0;
     uint64_t now = get_time();
@@ -66,8 +67,6 @@ void device_update() {
     if (!update_timer_trigger) return;
     update_timer_trigger = false;
 #endif
-
-    Log("update device");
 
     IFDEF(CONFIG_HAS_VGA, vga_update_screen());
 
