@@ -67,7 +67,6 @@ void device_update() {
     update_timer_trigger = false;
 #endif
 
-    Log("updated");
     IFDEF(CONFIG_HAS_VGA, vga_update_screen());
 
 #ifndef CONFIG_TARGET_AM
@@ -128,7 +127,6 @@ void intr_timer_callback(__sigval_t) {
 }
 
 void register_timer(timer_t* timer_id, void(*callback)(__sigval_t), __syscall_slong_t interval) {
-    Log("reg");
     struct sigevent event = {0};
     event.sigev_notify = SIGEV_THREAD;
     event.sigev_notify_function = callback;
@@ -164,5 +162,5 @@ void init_device() {
     IFNDEF(CONFIG_TARGET_AM, init_alarm());
 
     IFNDEF(CONFIG_TARGET_AM, register_update_timer());
-    //IFNDEF(CONFIG_TARGET_AM, register_intr_timer());
+    IFNDEF(CONFIG_TARGET_AM, register_intr_timer());
 }
