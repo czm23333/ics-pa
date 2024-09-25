@@ -139,7 +139,6 @@ void register_timer(timer_t* timer_id, void(*callback)(__sigval_t), __syscall_sl
 }
 
 void register_update_timer() {
-    Log("DUPD");
     register_timer(&update_timer_id, update_timer_callback, 1000000000l / TIMER_HZ);
 }
 
@@ -163,5 +162,5 @@ void init_device() {
     IFNDEF(CONFIG_TARGET_AM, init_alarm());
 
     IFNDEF(CONFIG_TARGET_AM, register_update_timer());
-    IFNDEF(CONFIG_TARGET_AM, register_intr_timer());
+    //IFNDEF(CONFIG_TARGET_AM, register_intr_timer());
 }
