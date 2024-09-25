@@ -131,11 +131,11 @@ void map(AddrSpace *as, void *va, void *pa, uint32_t prot) {
     pSec->PPN = (uintptr_t) pa / PGSIZE;
 }
 
-Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
+Context *ucontext(AddrSpace *as, Area kstack, uintptr_t runningStack, void *entry) {
     Context* ptr = kstack.end - sizeof(Context);
     memset(ptr, 0, sizeof(Context));
     ptr->mepc = (uintptr_t) entry;
-    ptr->gpr[2] = (uintptr_t) kstack.end; // sp
+    ptr->gpr[2] = runningStack; // sp
     ptr->pdir = as->ptr;
 
     // Enable intr

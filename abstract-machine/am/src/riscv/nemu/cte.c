@@ -3,12 +3,17 @@
 
 #define IRQ_TIMER 0x80000007
 
+void __am_get_cur_as(Context *c);
+
+void __am_switch(Context *c);
+
 static Context * (*user_handler)(Event, Context *) = NULL;
 
-Context *__am_irq_handle(Context *c) {
+Context *__am_irq_handle(Context *c, uint32_t nest_enabled) {
     __am_get_cur_as(c);
     if (user_handler) {
         Event ev = {0};
+        ev.nest_enabled = nest_enabled;
         switch (c->mcause) {
             case 11: {
                 c->mepc += 4;
@@ -88,8 +93,6 @@ bool ienabled() {
 }
 
 void iset(bool enable) {
-    MSTATUSParts mstatus;
-    asm volatile("csrr %0, mstatus" : "=r"(mstatus.val));
-    mstatus.MIE = enable;
-    asm volatile("csrw mstatus, %0" : : "r"(mstatus.val));
+    if (enable) asm volatile("csrsi mstatus, 8");
+    else asm volatile("csrc mstatus, 8");
 }

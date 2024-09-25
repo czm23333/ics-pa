@@ -84,7 +84,8 @@ __am_asm_trap:
   la t2, intr_running_stacks_end
   sub sp, t2, t1
 
-  # enable intr if we should
+  li a1, 0
+  # set nest_enabled if we should
   # check MPIE
   csrr t2, mstatus
   andi t2, t2, 0x80
@@ -92,7 +93,7 @@ __am_asm_trap:
   # check nest limit
   li t2, NESTED_INTR_LIMIT
   bge t0, t2, no_intr
-  EN_INTR
+  li a1, 1
 
 no_intr:
   call __am_irq_handle

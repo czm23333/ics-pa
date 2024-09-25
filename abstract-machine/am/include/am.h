@@ -29,6 +29,7 @@ typedef struct {
   } event;
   uintptr_t cause, ref;
   const char *msg;
+  bool nest_enabled;
 } Event;
 
 // A protected address space with user memory @area
@@ -69,9 +70,7 @@ void     disable_virtual ();
 void     protect         (AddrSpace *as);
 void     unprotect       (AddrSpace *as);
 void     map             (AddrSpace *as, void *vaddr, void *paddr, uint32_t prot);
-Context *ucontext        (AddrSpace *as, Area kstack, void *entry);
-void     __am_get_cur_as (Context *c);
-void     __am_switch     (Context *c);
+Context *ucontext        (AddrSpace *as, Area kstack, uintptr_t runningStack, void *entry);
 
 // ---------------------- MPE: Multi-Processing ----------------------
 bool     mpe_init    (void (*entry)());
