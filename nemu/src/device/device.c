@@ -119,6 +119,7 @@ void sdl_clear_event_queue() {
 static timer_t update_timer_id;
 void update_timer_callback(__sigval_t) {
     update_timer_trigger = true;
+    Log("tmp");
 }
 
 static timer_t intr_timer_id;
