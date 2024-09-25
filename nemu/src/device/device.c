@@ -105,6 +105,7 @@ void check_timer_intr() {
     intr_timer_trigger = false;
 #endif
 
+    Log("tmp");
     dev_raise_intr();
 }
 
@@ -124,7 +125,6 @@ void update_timer_callback(__sigval_t) {
 static timer_t intr_timer_id;
 void intr_timer_callback(__sigval_t) {
     intr_timer_trigger = true;
-    Log("tmp");
 }
 
 void register_timer(timer_t* timer_id, void(*callback)(__sigval_t), __syscall_slong_t interval) {
