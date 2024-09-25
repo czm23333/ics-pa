@@ -105,6 +105,7 @@ void check_timer_intr() {
     intr_timer_trigger = false;
 #endif
 
+    Log("Timer");
     dev_raise_intr();
 }
 
