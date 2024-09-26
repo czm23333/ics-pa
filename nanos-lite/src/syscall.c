@@ -4,6 +4,7 @@
 #include "proc.h"
 
 Context *schedule(Context *prev);
+int mm_brk(uintptr_t brk);
 
 Context *do_syscall(Context *c) {
     uintptr_t a[4];
@@ -21,6 +22,9 @@ Context *do_syscall(Context *c) {
             return schedule(c);
         case SYS_write:
             c->GPRx = fs_write(a[1], (const void*) a[2], a[3]);
+            break;
+        case SYS_brk:
+            c->GPRx = mm_brk(a[1]);
             break;
         default: panic("Unhandled syscall ID = %d", a[0]);
     }
