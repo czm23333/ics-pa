@@ -31,6 +31,7 @@ void map_range(AddrSpace* space, uintptr_t begin, uintptr_t end, uint8_t priv) {
 
 /* The brk() system call handler. */
 int mm_brk(uintptr_t brk) {
+    Log("mm brk %d\n", brk);
     uintptr_t newbrk = ROUNDUP(brk, PGSIZE);
     uintptr_t prev = current->brk;
     if (prev == newbrk) return 0;
