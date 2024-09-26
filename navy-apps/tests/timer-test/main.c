@@ -1,16 +1,18 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <sys/time.h>
+#include <NDL.h>
 
 int main() {
-    struct timeval start;
-    gettimeofday(&start, NULL);
+    NDL_Init(0);
+    uint32_t start = NDL_GetTicks();
     while (1) {
-        struct timeval cur;
-        gettimeofday(&cur, NULL);
-        if (cur.tv_sec > start.tv_sec || cur.tv_usec - start.tv_usec >= 500000) {
+        uint32_t cur = NDL_GetTicks();
+        if (cur - start >= 500) {
             start = cur;
             printf("Timer triggered\n");
         }
     }
+    NDL_Quit();
+    return 0;
 }
