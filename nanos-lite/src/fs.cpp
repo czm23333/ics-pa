@@ -32,7 +32,7 @@ struct FDInfo {
                           arg(arg), offset(offset), read(read), write(write), seek(seek) {
     }
 
-    bool operator==(const int fd) const {
+    bool operator==(int num) const {
         return false;
     }
 };
