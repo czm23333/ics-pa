@@ -24,8 +24,8 @@ Context *do_syscall(Context *c) {
             c->GPRx = fs_write(a[1], (const void*) a[2], a[3]);
             break;
         case SYS_brk:
-            //c->GPRx = mm_brk(a[1]);
-                c->GPRx = -1;
+            c->GPRx = mm_brk(a[1]);
+            //c->GPRx = -1;
             break;
         default: panic("Unhandled syscall ID = %d", a[0]);
     }
