@@ -32,9 +32,8 @@ struct FDInfo {
                           arg(arg), offset(offset), read(read), write(write), seek(seek) {
     }
 
-    bool operator==(int num) const {
-        Log("Comp %d, %d", fd, num);
-        return false;
+    bool operator==(int fd) const {
+        return this->fd == fd;
     }
 };
 
@@ -66,7 +65,7 @@ EXTERNC void init_fs() {
     fdList.emplace_back(FD_STDOUT, 0xFFFFFFu, nullptr, 0, invalid_read, invalid_write, invalid_seek);
     fdList.emplace_back(FD_STDERR, 0xFFFFFFu, nullptr, 0, invalid_read, invalid_write, invalid_seek);
     fdList.emplace_back(FD_FB, 0xFFFFFFu, nullptr, 0, invalid_read, invalid_write, invalid_seek);
-    auto iter = std::find<decltype(fdList)::iterator, int>(fdList.begin(), fdList.end(), 2);
+    auto iter = std::find(fdList.begin(), fdList.end(), FD_STDERR);
     if (iter == fdList.end()) Log("Not found");
     else Log("Found %d",(*iter).fd);
 }

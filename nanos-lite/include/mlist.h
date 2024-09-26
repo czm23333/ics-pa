@@ -85,7 +85,7 @@ class mlist {
         }
 
         bool operator!=(const iterator &other) const noexcept {
-            return current == other.current;
+            return current != other.current;
         }
     };
 
