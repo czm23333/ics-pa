@@ -33,9 +33,13 @@ Context *schedule(Context *prev) {
     for (unsigned i = 0; i < MAX_NR_PROC; i++) {
         if (current == &pcb[i]) {
             current->cp = prev;
-            ++i, i %= MAX_NR_PROC;
-            current = &pcb[i];
-            return current->cp;
+            for (unsigned j = (i + 1) % MAX_NR_PROC; j != i; j = (j + 1) % MAX_NR_PROC) {
+                if (!pcb[j].running) continue;
+                current = &pcb[j];
+                return current->cp;
+            }
+            if (!pcb[i].running) panic("No running process");
+            return prev;
         }
     }
 

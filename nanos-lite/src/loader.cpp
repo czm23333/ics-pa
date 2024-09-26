@@ -77,4 +77,6 @@ EXTERNC void context_uload(PCB *pcb, const char *filename) {
 
     pcb->cp = ucontext(&pcb->as, Area{pcb->stack, pcb->stack + sizeof(pcb->stack)}, stackTop,
                        reinterpret_cast<void *>(ehdr.e_entry));
+
+    pcb->running = true;
 }

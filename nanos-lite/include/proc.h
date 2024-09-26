@@ -13,6 +13,7 @@ typedef union {
         Context *cp;
         AddrSpace as;
         uintptr_t brk;
+        bool running;
     };
 } PCB;
 

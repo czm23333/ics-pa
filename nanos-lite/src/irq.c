@@ -1,7 +1,7 @@
 #include <common.h>
 
 Context* schedule(Context *prev);
-void do_syscall(Context *c);
+Context* do_syscall(Context *c);
 
 static Context *do_event(Event e, Context *c) {
     switch (e.event) {
@@ -9,8 +9,7 @@ static Context *do_event(Event e, Context *c) {
         case EVENT_IRQ_TIMER:
             return schedule(c);
         case EVENT_SYSCALL:
-            do_syscall(c);
-            break;
+            return do_syscall(c);
         default: panic("Unhandled event ID = %d", e.event);
     }
 
