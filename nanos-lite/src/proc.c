@@ -2,7 +2,7 @@
 
 void context_uload(PCB *pcb, const char *filename);
 
-#define MAX_NR_PROC 1
+#define MAX_NR_PROC 2
 
 static PCB pcb[MAX_NR_PROC] __attribute__((used)) = {};
 static PCB pcb_boot = {};
