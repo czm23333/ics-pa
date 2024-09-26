@@ -1,6 +1,6 @@
 #include <common.h>
 #include "syscall.h"
-
+#include <fs.h>
 #include "proc.h"
 
 Context *schedule(Context *prev);
@@ -21,6 +21,9 @@ Context *do_syscall(Context *c) {
             return schedule(c);
         case SYS_yield:
             return schedule(c);
+        case SYS_write:
+            c->GPRx = fs_write(a[1], (const void*) a[2], a[3]);
+            break;
         default: panic("Unhandled syscall ID = %d", a[0]);
     }
 
