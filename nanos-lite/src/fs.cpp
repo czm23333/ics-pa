@@ -57,4 +57,7 @@ static Finfo file_table[] __attribute__((used)) = {
 
 EXTERNC void init_fs() {
     fdList.emplace_back(FD_STDIN, 0xFFFFFFu, nullptr, 0, invalid_read, invalid_write, invalid_seek);
+    fdList.emplace_back(FD_STDOUT, 0xFFFFFFu, nullptr, 0, invalid_read, invalid_write, invalid_seek);
+    fdList.emplace_back(FD_STDERR, 0xFFFFFFu, nullptr, 0, invalid_read, invalid_write, invalid_seek);
+    fdList.emplace_back(FD_FB, 0xFFFFFFu, nullptr, 0, invalid_read, invalid_write, invalid_seek);
 }
