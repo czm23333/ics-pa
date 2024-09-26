@@ -87,6 +87,10 @@ class mlist {
         bool operator!=(const iterator &other) const noexcept {
             return current != other.current;
         }
+
+        T* operator->() noexcept {
+            return &operator*();
+        }
     };
 
     static void destroy_nodes(node *head) {
