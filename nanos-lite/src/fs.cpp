@@ -33,6 +33,7 @@ struct FDInfo {
     }
 
     bool operator==(int num) const {
+        Log("Comp %d, %d", fd, num);
         return false;
     }
 };
