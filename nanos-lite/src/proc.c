@@ -19,7 +19,7 @@ void init_proc() {
     Log("Initializing processes...");
 
     // load program here
-    context_uload(&pcb[0], "/bin/hello");
+    context_uload(&pcb[0], "/bin/file-test");
     context_uload(&pcb[1], "/bin/dummy");
 }
 
