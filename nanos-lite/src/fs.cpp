@@ -33,7 +33,7 @@ struct FDInfo {
     }
 
     bool operator==(const int fd) const {
-        return this->fd == fd;
+        return false;
     }
 };
 
