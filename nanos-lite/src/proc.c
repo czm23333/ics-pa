@@ -21,7 +21,6 @@ void init_proc() {
     // load program here
     context_uload(&pcb[0], "/bin/hello");
     context_uload(&pcb[1], "/bin/dummy");
-    pcb[1].running = false;
 }
 
 Context *schedule(Context *prev) {
