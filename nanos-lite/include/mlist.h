@@ -1,6 +1,7 @@
 #pragma once
 #include <common.h>
 #include <utility>
+#include <bits/stl_iterator_base_types.h>
 
 #include "debug.h"
 
@@ -27,9 +28,16 @@ class mlist {
         node *prev = nullptr;
         node *current = nullptr;
 
-        iterator(node *prev, node *current) noexcept : prev(prev), current(current) {}
+        iterator(node *prev, node *current) noexcept : prev(prev), current(current) {
+        }
 
     public:
+        using difference_type = std::ptrdiff_t;
+        using value_type = T;
+        using pointer = T*;
+        using reference = T&;
+        using iterator_category = std::bidirectional_iterator_tag;
+
         T &operator*() const noexcept {
             if (current == nullptr)
                 panic("out of bound");
@@ -75,6 +83,10 @@ class mlist {
         bool operator==(const iterator &other) const noexcept {
             return current == other.current;
         }
+
+        bool operator!=(const iterator &other) const noexcept {
+            return current == other.current;
+        }
     };
 
     static void destroy_nodes(node *head) {
@@ -96,7 +108,7 @@ class mlist {
     node *tail = nullptr;
     size_t size_v = 0;
 
-    void insert_node(node* prev, node* cur, node* next) {
+    void insert_node(node *prev, node *cur, node *next) {
         cur->last = prev;
         cur->next = next;
         if (prev != nullptr) prev->next = cur;
@@ -106,10 +118,10 @@ class mlist {
         ++size_v;
     }
 
-    void remove_node(node* cur) {
+    void remove_node(node *cur) {
         if (cur == nullptr) return;
-        node* prev = cur->last;
-        node* next = cur->next;
+        node *prev = cur->last;
+        node *next = cur->next;
         if (prev != nullptr) prev->next = next;
         if (next != nullptr) next->last = prev;
         if (cur == head) head = next;
@@ -119,6 +131,8 @@ class mlist {
     }
 
 public:
+    using iterator = iterator;
+
     mlist() noexcept = default;
 
     mlist(const mlist &other) {
@@ -150,20 +164,20 @@ public:
     }
 
     iterator insert(iterator pos, const T &data) noexcept {
-        node* new_node = new node(data);
+        node *new_node = new node(data);
         insert_node(pos.prev, new_node, pos.current);
         return iterator(pos.prev, new_node);
     }
 
     iterator insert(iterator pos, T &&data) noexcept {
-        node* new_node = new node(std::move(data));
+        node *new_node = new node(std::move(data));
         insert_node(pos.prev, new_node, pos.current);
         return iterator(pos.prev, new_node);
     }
 
     template<typename... Args>
     iterator emplace(iterator pos, Args... args) noexcept {
-        node* new_node = new node(std::forward<Args>(args)...);
+        node *new_node = new node(std::forward<Args>(args)...);
         insert_node(pos.prev, new_node, pos.current);
         return iterator(pos.prev, new_node);
     }
@@ -172,7 +186,7 @@ public:
         remove_node(pos.current);
     }
 
-    iterator push_back(const T& data) noexcept {
+    iterator push_back(const T &data) noexcept {
         return insert(end(), data);
     }
 
@@ -185,7 +199,7 @@ public:
         return emplace(end(), std::forward<Args>(args)...);
     }
 
-    iterator push_front(const T& data) noexcept {
+    iterator push_front(const T &data) noexcept {
         return insert(begin(), data);
     }
 

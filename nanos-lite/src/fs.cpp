@@ -1,5 +1,6 @@
 #include <fs.h>
 #include <mlist.h>
+#include <algorithm>
 
 #include <externc.h>
 
@@ -29,6 +30,10 @@ struct FDInfo {
     FDInfo(int fd, unsigned refcount, void *arg, size_t offset, ReadFn read, WriteFn write,
            SeekFn seek) : fd(fd), refcount(refcount),
                           arg(arg), offset(offset), read(read), write(write), seek(seek) {
+    }
+
+    bool operator==(const int fd) const {
+        return this->fd == fd;
     }
 };
 
@@ -60,4 +65,5 @@ EXTERNC void init_fs() {
     fdList.emplace_back(FD_STDOUT, 0xFFFFFFu, nullptr, 0, invalid_read, invalid_write, invalid_seek);
     fdList.emplace_back(FD_STDERR, 0xFFFFFFu, nullptr, 0, invalid_read, invalid_write, invalid_seek);
     fdList.emplace_back(FD_FB, 0xFFFFFFu, nullptr, 0, invalid_read, invalid_write, invalid_seek);
+    printf("%d",(*std::find(fdList.begin(), fdList.end(), FD_STDIN)).fd);
 }
