@@ -66,7 +66,7 @@ EXTERNC void init_fs() {
     fdList.emplace_back(FD_STDOUT, 0xFFFFFFu, nullptr, 0, invalid_read, invalid_write, invalid_seek);
     fdList.emplace_back(FD_STDERR, 0xFFFFFFu, nullptr, 0, invalid_read, invalid_write, invalid_seek);
     fdList.emplace_back(FD_FB, 0xFFFFFFu, nullptr, 0, invalid_read, invalid_write, invalid_seek);
-    auto iter = std::find<decltype(fdList)::iterator, int>(fdList.begin(), fdList.end(), FD_STDERR);
+    auto iter = std::find<decltype(fdList)::iterator, int>(fdList.begin(), fdList.end(), 2);
     if (iter == fdList.end()) Log("Not found");
     else Log("Found %d",(*iter).fd);
 }
