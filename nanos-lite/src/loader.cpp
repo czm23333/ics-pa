@@ -71,6 +71,8 @@ EXTERNC void context_uload(PCB *pcb, const char *filename) {
         }
     }
 
+    pcb->brk = ROUNDUP(pcb->brk, PGSIZE);
+
     constexpr uintptr_t stackTop = 0xE0000000;
     constexpr unsigned stackSize = 8 * 1024;
     map_range(&pcb->as, stackTop - stackSize, stackTop, priv.val);
