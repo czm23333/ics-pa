@@ -83,7 +83,7 @@ public:
     template <typename... Args>
     T& emplace_back(Args... args) noexcept {
         grow_if_necessary();
-        return *new (data_v + size_v++) T (args...);
+        return *new (data_v + size_v++) T (std::forward<Args>(args)...);
     }
 
     void pop_back() noexcept {
