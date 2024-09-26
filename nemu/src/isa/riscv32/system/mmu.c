@@ -33,8 +33,10 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
     Sv32VAParts vaParts;
     vaParts.val = vaddr;
     Sv32PTE *pe1 = (Sv32PTE *) guest_to_host(satp.PPN * PAGE_SIZE + vaParts.pageNumber1 * sizeof(Sv32PTE));
-    if (!pe1->priv.V) panic("page fault at " FMT_PADDR, vaddr);
+    if (!pe1->priv.V)
+        panic("page fault at " FMT_PADDR, vaddr);
     Sv32PTE *pe2 = (Sv32PTE *) guest_to_host(pe1->PPN * PAGE_SIZE + vaParts.pageNumber2 * sizeof(Sv32PTE));
-    if (!pe2->priv.V) panic("page fault at " FMT_PADDR, vaddr);
+    if (!pe2->priv.V)
+        panic("page fault at " FMT_PADDR, vaddr);
     return pe2->PPN * PAGE_SIZE + vaParts.pageOffset;
 }
