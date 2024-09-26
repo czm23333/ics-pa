@@ -8,10 +8,9 @@ int main() {
     while (1) {
         struct timeval cur;
         gettimeofday(&cur, NULL);
-        printf("%u %u\n", start.tv_sec, cur.tv_sec);
         if (cur.tv_sec > start.tv_sec || cur.tv_usec - start.tv_usec >= 500000) {
             start = cur;
-            printf("Timer triggered");
+            printf("Timer triggered\n");
         }
     }
 }
