@@ -3,6 +3,7 @@
 static Context *do_event(Event e, Context *c) {
     switch (e.event) {
         case EVENT_YIELD: Log("Yield event"); break;
+        case EVENT_IRQ_TIMER: Log("IRQ timer"); break;
         default: panic("Unhandled event ID = %d", e.event);
     }
 
