@@ -5,6 +5,7 @@ Context *schedule(Context *prev);
 Context *do_syscall(Context *c);
 
 static Context *do_event(Event e, Context *c) {
+    Log("event %d", e.event);
     switch (e.event) {
         case EVENT_YIELD:
             return schedule(c);
