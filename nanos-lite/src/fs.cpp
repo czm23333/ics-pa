@@ -4,16 +4,9 @@
 #include <cstdio>
 #include <ramdisk.h>
 #include <klib.h>
+#include <device.h>
 
 #include <externc.h>
-
-struct FDInfo;
-
-typedef size_t (*ReadFn)(void *arg, FDInfo *fd, void *buf, size_t len);
-
-typedef size_t (*WriteFn)(void *arg, FDInfo *fd, const void *buf, size_t len);
-
-typedef off_t (*SeekFn)(void *arg, FDInfo *fd, off_t offset, int whence);
 
 struct Finfo {
     const char *name;
@@ -25,48 +18,21 @@ struct Finfo {
     }
 };
 
-struct FDInfo {
-    int fd;
-    unsigned refcount;
-    void *arg;
-    size_t offset;
-    ReadFn read;
-    WriteFn write;
-    SeekFn seek;
-
-    FDInfo(int fd, unsigned refcount, void *arg, size_t offset, ReadFn read, WriteFn write,
-           SeekFn seek) : fd(fd), refcount(refcount),
-                          arg(arg), offset(offset), read(read), write(write), seek(seek) {
-    }
-
-    bool operator==(int fd) const {
-        return this->fd == fd;
-    }
-};
-
 enum { FD_STDIN, FD_STDOUT, FD_STDERR, FD_FB };
 
 int fdId = 256;
 mlist<FDInfo> fdList;
 
 size_t invalid_read(void *arg, FDInfo *fd, void *buf, size_t len) {
-    panic("should not reach here");
     return 0;
 }
 
 size_t invalid_write(void *arg, FDInfo *fd, const void *buf, size_t len) {
-    panic("should not reach here");
     return 0;
 }
 
 off_t invalid_seek(void *arg, FDInfo *fd, off_t offset, int whence) {
-    panic("should not reach here");
-}
-
-size_t stdout_write(void *arg, FDInfo *fd, const void *buf, size_t len) {
-    auto bufc = static_cast<const char *>(buf);
-    for (size_t i = 0; i < len; i++) putch(*bufc++);
-    return len;
+    return -1;
 }
 
 size_t file_read(void *arg, FDInfo *fd, void *buf, size_t len) {
@@ -164,7 +130,7 @@ int fs_close(int fd) {
 
 EXTERNC void init_fs() {
     fdList.emplace_back(FD_STDIN, 0xFFFFFFu, nullptr, 0, invalid_read, invalid_write, invalid_seek);
-    fdList.emplace_back(FD_STDOUT, 0xFFFFFFu, nullptr, 0, invalid_read, stdout_write, invalid_seek);
-    fdList.emplace_back(FD_STDERR, 0xFFFFFFu, nullptr, 0, invalid_read, stdout_write, invalid_seek);
+    fdList.emplace_back(FD_STDOUT, 0xFFFFFFu, nullptr, 0, invalid_read, serial_write, invalid_seek);
+    fdList.emplace_back(FD_STDERR, 0xFFFFFFu, nullptr, 0, invalid_read, serial_write, invalid_seek);
     fdList.emplace_back(FD_FB, 0xFFFFFFu, nullptr, 0, invalid_read, invalid_write, invalid_seek);
 }
