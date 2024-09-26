@@ -148,6 +148,12 @@ off_t fs_lseek(int fd, off_t offset, int whence) {
     return fdi->seek(fdi->arg, fdi, offset, whence);
 }
 
+off_t fs_tell(int fd) {
+    FDInfo* fdi = findFD(fd);
+    if (fdi == nullptr) return -1;
+    return fdi->offset;
+}
+
 int fs_close(int fd) {
     auto it = std::find(fdList.begin(), fdList.end(), fd);
     if (it == fdList.end()) return -1;

@@ -23,6 +23,14 @@ void operator delete[](void *p) {
     free(p);
 }
 
+void operator delete(void *p, size_t) {
+    free(p);
+}
+
+void operator delete[](void *p, size_t) {
+    free(p);
+}
+
 void *operator new(size_t, void *p) {
     return p;
 }

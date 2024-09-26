@@ -18,11 +18,15 @@ void free_page(void *p) {
     free(p);
 }
 
-void map_range(AddrSpace* space, uintptr_t begin, uintptr_t end, uint8_t priv) {
+void map_range_aligned(AddrSpace* space, uintptr_t begin, uintptr_t end, uint8_t priv) {
     while (begin < end) {
         map(space, (void *) begin, new_page(1), priv);
         begin += PGSIZE;
     }
+}
+
+void map_range(AddrSpace* space, uintptr_t begin, uintptr_t end, uint8_t priv) {
+    map_range_aligned(space, ROUNDDOWN(begin, PGSIZE), ROUNDUP(end, PGSIZE), priv);
 }
 
 /* The brk() system call handler. */
@@ -34,11 +38,11 @@ int mm_brk(uintptr_t brk) {
         Sv32Priv priv;
         priv.val = 0;
         priv.V = 1;
-        map_range(&current->as, prev, newbrk, priv.val);
+        map_range_aligned(&current->as, prev, newbrk, priv.val);
     } else {
         Sv32Priv priv;
         priv.val = 0;
-        map_range(&current->as, newbrk, prev, priv.val);
+        map_range_aligned(&current->as, newbrk, prev, priv.val);
     }
     current->brk = newbrk;
     return 0;

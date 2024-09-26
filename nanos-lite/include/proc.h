@@ -7,12 +7,13 @@
 #define STACK_SIZE (8 * PGSIZE)
 
 typedef union {
-  uint8_t stack[STACK_SIZE] PG_ALIGN;
-  struct {
-    Context *cp;
-    AddrSpace as;
-    uintptr_t brk;
-  };
+    uint8_t stack[STACK_SIZE] PG_ALIGN;
+
+    struct {
+        Context *cp;
+        AddrSpace as;
+        uintptr_t brk;
+    };
 } PCB;
 
 extern PCB *current;

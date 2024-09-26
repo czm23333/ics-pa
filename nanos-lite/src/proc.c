@@ -1,33 +1,43 @@
 #include <proc.h>
 
-#define MAX_NR_PROC 4
+void context_uload(PCB *pcb, const char *filename);
+
+#define MAX_NR_PROC 2
 
 static PCB pcb[MAX_NR_PROC] __attribute__((used)) = {};
 static PCB pcb_boot = {};
 PCB *current = NULL;
 
 void switch_boot_pcb() {
-  current = &pcb_boot;
-}
-
-void hello_fun(void *arg) {
-  int j = 1;
-  while (1) {
-    Log("Hello World from Nanos-lite with arg '%p' for the %dth time!", (uintptr_t)arg, j);
-    j ++;
-    yield();
-  }
+    current = &pcb_boot;
+    asm volatile("csrw mscratch, %0" : : "r" (current->stack + sizeof(current->stack)));
 }
 
 void init_proc() {
-  switch_boot_pcb();
+    switch_boot_pcb();
 
-  Log("Initializing processes...");
+    Log("Initializing processes...");
 
-  // load program here
-
+    // load program here
+    context_uload(&pcb[0], "/bin/dummy");
+    context_uload(&pcb[1], "/bin/hello");
 }
 
-Context* schedule(Context *prev) {
-  return NULL;
+Context *schedule(Context *prev) {
+    if (current == &pcb_boot) {
+        pcb_boot.cp = prev;
+        current = &pcb[0];
+        return current->cp;
+    }
+
+    for (unsigned i = 0; i < MAX_NR_PROC; i++) {
+        if (current == &pcb[i]) {
+            current->cp = prev;
+            ++i, i %= MAX_NR_PROC;
+            current = &pcb[i];
+            return current->cp;
+        }
+    }
+
+    return prev;
 }
