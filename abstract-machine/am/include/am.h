@@ -70,6 +70,7 @@ void     disable_virtual ();
 void     protect         (AddrSpace *as);
 void     unprotect       (AddrSpace *as);
 void     map             (AddrSpace *as, void *vaddr, void *paddr, uint32_t prot);
+void     as_enter        (AddrSpace *as);
 Context *ucontext        (AddrSpace *as, Area kstack, uintptr_t runningStack, void *entry);
 
 // ---------------------- MPE: Multi-Processing ----------------------

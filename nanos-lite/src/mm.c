@@ -18,6 +18,13 @@ void free_page(void *p) {
     free(p);
 }
 
+void map_range(AddrSpace* space, uintptr_t begin, uintptr_t end, uint8_t priv) {
+    while (begin < end) {
+        map(space, (void *) begin, new_page(1), priv);
+        begin += PGSIZE;
+    }
+}
+
 /* The brk() system call handler. */
 int mm_brk(uintptr_t brk) {
     uintptr_t newbrk = ROUNDUP(brk, PGSIZE);
@@ -27,19 +34,11 @@ int mm_brk(uintptr_t brk) {
         Sv32Priv priv;
         priv.val = 0;
         priv.V = 1;
-        while (prev < newbrk) {
-            map(&current->as, (void *) prev, new_page(1), priv.val);
-            prev += PGSIZE;
-        }
+        map_range(&current->as, prev, newbrk, priv.val);
     } else {
         Sv32Priv priv;
         priv.val = 0;
-        prev -= PGSIZE;
-        while (prev >= newbrk) {
-            map(&current->as, (void *) prev, 0, priv.val);
-            if (prev == 0) break;
-            prev -= PGSIZE;
-        }
+        map_range(&current->as, newbrk, prev, priv.val);
     }
     current->brk = newbrk;
     return 0;

@@ -101,6 +101,10 @@ void unprotect(AddrSpace *as) {
     pgfree_usr(pageTable);
 }
 
+void as_enter(AddrSpace *as) {
+    if (vme_enable) set_satp(as->ptr);
+}
+
 void __am_get_cur_as(Context *c) {
     c->pdir = (vme_enable ? (void *) get_satp() : NULL);
 }
