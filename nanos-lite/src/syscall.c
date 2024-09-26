@@ -38,6 +38,14 @@ Context *do_syscall(Context *c) {
         case SYS_brk:
             c->GPRx = mm_brk(a[1]);
             break;
+        case SYS_gettimeofday:
+            uint64_t time;
+            ioe_read(AM_TIMER_UPTIME, &time);
+            struct timeval* tv = (struct timeval*)a[1];
+                    tv->tv_sec = time / 1000000;
+            tv->tv_usec = time % 1000000;
+            c->GPRx = 0;
+            break;
         default: panic("Unhandled syscall ID = %d", a[0]);
     }
 
