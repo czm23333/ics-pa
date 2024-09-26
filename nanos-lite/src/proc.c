@@ -20,7 +20,7 @@ void init_proc() {
 
     // load program here
     context_uload(&pcb[0], "/bin/hello");
-    //context_uload(&pcb[0], "/bin/dummy");
+    context_uload(&pcb[1], "/bin/dummy");
 }
 
 Context *schedule(Context *prev) {
