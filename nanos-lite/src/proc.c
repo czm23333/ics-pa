@@ -2,7 +2,7 @@
 
 void context_uload(PCB *pcb, const char *filename);
 
-#define MAX_NR_PROC 2
+#define MAX_NR_PROC 1
 
 static PCB pcb[MAX_NR_PROC] __attribute__((used)) = {};
 static PCB pcb_boot = {};
@@ -19,7 +19,7 @@ void init_proc() {
     Log("Initializing processes...");
 
     // load program here
-    context_uload(&pcb[0], "/bin/dummy");
+    //context_uload(&pcb[0], "/bin/dummy");
     context_uload(&pcb[1], "/bin/hello");
 }
 
