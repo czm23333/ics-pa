@@ -9,6 +9,8 @@ Context *do_syscall(Context *c) {
     uintptr_t a[4];
     a[0] = c->GPR1;
 
+    Log("Syscall %d", a[0]);
+
     switch (a[0]) {
         case SYS_exit:
             current->running = false;
