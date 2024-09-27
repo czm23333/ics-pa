@@ -23,7 +23,6 @@ size_t serial_write(void *arg, FDInfo *fd, const void *buf, size_t len) {
 }
 
 size_t events_read(void *arg, FDInfo *fd, void *buf, size_t len) {
-    Log("Read");
     AM_INPUT_KEYBRD_T key;
     ioe_read(AM_INPUT_KEYBRD, &key);
     if (key.keycode == AM_KEY_NONE) return 0;
