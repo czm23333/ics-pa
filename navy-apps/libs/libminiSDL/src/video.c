@@ -16,11 +16,13 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
         srcr.x = 0, srcr.y = 0;
         srcr.w = src->w, srcr.h = src->h;
     } else srcr = *srcrect;
+    if (srcr.w == 0 && srcr.h == 0) srcr.w = src->w, srcr.h = src->h;
     SDL_Rect dstr;
     if (dstrect == NULL) {
         dstr.x = 0, dstr.y = 0;
         dstr.w = dst->w, dstr.h = dst->h;
     } else dstr = *dstrect;
+    if (dstr.w == 0 && dstr.h == 0) dstr.w = dst->w, dstr.h = dst->h;
 
     uint8_t bpp = src->format->BytesPerPixel;
     uint8_t* srcrp = src->pixels + srcr.y * src->pitch + srcr.x * bpp;
