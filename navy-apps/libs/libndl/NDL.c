@@ -4,6 +4,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/time.h>
+#include <fcntl.h>
 
 static int evtdev = -1;
 static int fbdev = -1;
@@ -15,11 +16,10 @@ uint32_t NDL_GetTicks() {
   return cur.tv_sec * 1000 + cur.tv_usec / 1000;
 }
 
-static FILE* eventFile;
+static int eventFile;
 
 int NDL_PollEvent(char *buf, int len) {
-  printf("Poll\n");
-  size_t res = fread(buf, len, len, eventFile);
+  size_t res = read(eventFile, buf, len);
   return res != 0;
 }
 
@@ -64,10 +64,10 @@ int NDL_Init(uint32_t flags) {
   if (getenv("NWM_APP")) {
     evtdev = 3;
   }
-  eventFile = fopen("/dev/events", "r");
+  eventFile = open("/dev/events", 0);
   return 0;
 }
 
 void NDL_Quit() {
-  fclose(eventFile);
+  close(eventFile);
 }
