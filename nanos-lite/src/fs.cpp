@@ -92,7 +92,8 @@ static Finfo file_table[] __attribute__((used)) = {
 };
 
 static SPFInfo special_file_table[] = {
-    {"/dev/events", events_read, invalid_write, invalid_seek}
+    {"/dev/events", events_read, invalid_write, invalid_seek},
+    {"/proc/dispinfo", dispinfo_read, invalid_write, invalid_seek}
 };
 
 FDInfo *findFD(int fd) {

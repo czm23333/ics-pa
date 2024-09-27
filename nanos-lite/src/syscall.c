@@ -46,6 +46,9 @@ Context *do_syscall(Context *c) {
             tv->tv_usec = time % 1000000;
             c->GPRx = 0;
             break;
+        case SYS_fbdraw:
+            ioe_write(AM_GPU_FBDRAW, (void*) a[1]);
+            break;
         default: panic("Unhandled syscall ID = %d", a[0]);
     }
 
