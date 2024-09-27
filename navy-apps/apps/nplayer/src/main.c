@@ -7,7 +7,7 @@
 #include <vorbis.h>
 #include <fixedptc.h>
 
-#define MUSIC_PATH "/share/music/little-star.ogg"
+#define MUSIC_PATH "/share/music/file_example_OOG_2MG.ogg"
 #define SAMPLES 4096
 #define FPS 10
 #define W 400
