@@ -40,6 +40,6 @@ void builtin_sh_run() {
         }
       }
     }
-    //refresh_terminal();
+    refresh_terminal();
   }
 }
