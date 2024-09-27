@@ -4,16 +4,19 @@
 
 EXTERNC void context_uload(PCB *pcb, const char *filename);
 
-#define MAX_NR_PROC 3
-
 mlist<PCB> pcbs;
-static PCB pcb[MAX_NR_PROC] __attribute__((used)) = {};
 static PCB pcb_boot = {};
-PCB *current = NULL;
+decltype(pcbs)::iterator currentIter = pcbs.end();
+PCB *current = nullptr;
 
 void switch_boot_pcb() {
     current = &pcb_boot;
     asm volatile("csrw mscratch, %0" : : "r" (current->stack + sizeof(current->stack)));
+}
+
+void load_program(const char *filename) {
+    auto iter = pcbs.emplace_back();
+    context_uload(&*iter, filename);
 }
 
 EXTERNC void init_proc() {
@@ -22,30 +25,33 @@ EXTERNC void init_proc() {
     Log("Initializing processes...");
 
     // load program here
-    context_uload(&pcb[0], "/bin/file-test");
-    context_uload(&pcb[1], "/bin/dummy");
-    context_uload(&pcb[2], "/bin/bmp-test");
+    load_program("/bin/file-test");
+    load_program("/bin/dummy");
+    load_program("/bin/bmp-test");
 }
 
 EXTERNC Context *schedule(Context *prev) {
     if (current == &pcb_boot) {
         pcb_boot.cp = prev;
-        current = &pcb[0];
+        if (pcbs.size() == 0) panic("No running process");
+        currentIter = pcbs.begin();
+        current = &*currentIter;
         return current->cp;
     }
 
-    for (unsigned i = 0; i < MAX_NR_PROC; i++) {
-        if (current == &pcb[i]) {
-            current->cp = prev;
-            for (unsigned j = (i + 1) % MAX_NR_PROC; j != i; j = (j + 1) % MAX_NR_PROC) {
-                if (!pcb[j].running) continue;
-                current = &pcb[j];
-                return current->cp;
-            }
-            if (!pcb[i].running) panic("No running process");
-            return prev;
-        }
+    current->cp = prev;
+    auto nxtIter = currentIter;
+    ++nxtIter;
+    if (!current->running) pcbs.erase(currentIter);
+    if (nxtIter != pcbs.end()) {
+        currentIter = nxtIter;
+        current = &*currentIter;
+        return current->cp;
     }
 
-    return prev;
+    if (pcbs.size() == 0) panic("No running process");
+
+    currentIter = pcbs.begin();
+    current = &*currentIter;
+    return current->cp;
 }

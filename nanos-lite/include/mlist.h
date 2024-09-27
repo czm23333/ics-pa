@@ -224,6 +224,26 @@ public:
         erase(begin());
     }
 
+    T& front() noexcept {
+        if (size_v == 0) panic("out of bound: front > empty");
+        return head->data;
+    }
+
+    const T& front() const noexcept {
+        if (size_v == 0) panic("out of bound: front > empty");
+        return head->data;
+    }
+
+    T& back() noexcept {
+        if (size_v == 0) panic("out of bound: back > empty");
+        return tail->data;
+    }
+
+    const T& back() const noexcept {
+        if (size_v == 0) panic("out of bound: back > empty");
+        return tail->data;
+    }
+
     [[nodiscard]] size_t size() const noexcept {
         return size_v;
     }
