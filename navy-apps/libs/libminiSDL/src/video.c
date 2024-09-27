@@ -1,6 +1,7 @@
 #include <NDL.h>
 #include <sdl-video.h>
 #include <assert.h>
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
@@ -51,6 +52,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
             memcpy(buf + y * w + x, rp + x, bpp);
         rp += s->pitch;
     }
+    printf("Draw\n");
     NDL_DrawRect(buf, x, y, w, h);
     free(buf);
 }
