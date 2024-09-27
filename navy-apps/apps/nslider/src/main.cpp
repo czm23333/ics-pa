@@ -28,7 +28,7 @@ void render() {
   assert(slide);
   SDL_BlitSurface(slide, NULL, screen, NULL);
   //NDL_DrawRect(reinterpret_cast<uint32_t *>(screen->pixels), 0, 0, screen->w, screen->h);
-  SDL_UpdateRect(screen, 0, 0, screen->w, screen->h);
+  SDL_UpdateRect(screen, 0, 0, 0, 0);
   SDL_FreeSurface(slide);
 }
 
