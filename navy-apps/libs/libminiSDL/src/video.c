@@ -81,9 +81,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
             memcpy(buf + y * w + x, rp + x * bpp, bpp);
         rp += s->pitch;
     }
-    printf("addr:%p %p\n", s, buf);
     NDL_DrawRect(buf, x, y, w, h);
-    printf("addr:%p %p\n", s, buf);
     free(buf);
     SDL_UnlockSurface(s);
 }
