@@ -93,7 +93,9 @@ static Finfo file_table[] __attribute__((used)) = {
 
 static SPFInfo special_file_table[] = {
     {"/dev/events", events_read, invalid_write, invalid_seek},
-    {"/proc/dispinfo", dispinfo_read, invalid_write, invalid_seek}
+    {"/proc/dispinfo", dispinfo_read, invalid_write, invalid_seek},
+    {"/dev/sb", invalid_read, sb_write, invalid_seek},
+    {"/dev/sbctl", sbctl_read, sbctl_write, invalid_seek}
 };
 
 FDInfo *findFD(int fd) {
@@ -103,7 +105,7 @@ FDInfo *findFD(int fd) {
 }
 
 int fs_open(const char *pathname, int flags, int mode) {
-    for (auto& spf : special_file_table) {
+    for (auto &spf: special_file_table) {
         if (spf == pathname) {
             fdList.emplace_back(fdId, 1, nullptr, 0, spf.read, spf.write, spf.seek);
             return fdId++;

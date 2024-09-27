@@ -45,12 +45,18 @@ void __am_audio_unlock() {
 }
 
 void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
-    __am_audio_lock();
+    uint8_t* ptr = ctl->buf.start;
+    beg:__am_audio_lock();
     uint32_t count = get_count();
     uint32_t pad = inl(AUDIO_PAD_ADDR);
     uint32_t index = (pad + count) % sbuf_size;
-    uint8_t* ptr = ctl->buf.start;
     while (ptr != ctl->buf.end) {
+        if (count >= sbuf_size) {
+            outl(AUDIO_COUNT_ADDR, count);
+            __am_audio_unlock();
+            while (get_count() >= sbuf_size) {}
+            goto beg;
+        }
         outb(AUDIO_SBUF_ADDR + index * sizeof(uint8_t), *ptr++);
         index = (index + 1) % sbuf_size;
         ++count;

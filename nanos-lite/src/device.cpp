@@ -26,11 +26,11 @@ size_t events_read(void *arg, FDInfo *fd, void *buf, size_t len) {
     AM_INPUT_KEYBRD_T key;
     ioe_read(AM_INPUT_KEYBRD, &key);
     if (key.keycode == AM_KEY_NONE) return 0;
-    const char* kn = keyname[key.keycode];
+    const char *kn = keyname[key.keycode];
     size_t elen = 4 + strlen(kn);
     if (len < elen) return 0;
 
-    char* bufc = static_cast<char *>(buf);
+    char *bufc = static_cast<char *>(buf);
     if (key.keydown) {
         bufc[0] = 'k';
         bufc[1] = 'd';
@@ -51,9 +51,23 @@ size_t dispinfo_read(void *arg, FDInfo *fd, void *buf, size_t len) {
     return sprintf(static_cast<char *>(buf), "WIDTH:%d\nHEIGHT:%d", gpuConf.width, gpuConf.height);
 }
 
-size_t fb_write(const void *buf, size_t offset, size_t len) {
+size_t sbctl_read(void *arg, FDInfo *fd, void *buf, size_t len) {
+    if (len < sizeof(AM_AUDIO_STATUS_T)) return 0;
+    ioe_read(AM_AUDIO_STATUS, buf);
+    return sizeof(AM_AUDIO_STATUS_T);
+}
 
-    return 0;
+size_t sbctl_write(void *arg, FDInfo *fd, const void *buf, size_t len) {
+    if (len != sizeof(AM_AUDIO_CTRL_T)) return 0;
+    ioe_write(AM_AUDIO_CTRL, const_cast<void *>(buf));
+    return sizeof(AM_AUDIO_CTRL_T);
+}
+
+size_t sb_write(void *arg, FDInfo *fd, const void *buf, size_t len) {
+    AM_AUDIO_PLAY_T play;
+    play.buf = Area{const_cast<void *>(buf), static_cast<char *>(const_cast<void *>(buf)) + len};
+    ioe_write(AM_AUDIO_PLAY, &play);
+    return len;
 }
 
 EXTERNC void init_device() {
