@@ -44,18 +44,16 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
 
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
     NDL_OpenCanvas(&s->w, &s->h);
-    NDL_DrawRect(s->pixels, x, y, w, h);
-    /*uint32_t* buf = malloc(w * h * sizeof(uint32_t));
+    uint32_t* buf = malloc(w * h * sizeof(uint32_t));
     uint8_t bpp = s->format->BytesPerPixel;
     uint8_t* rp = s->pixels + y * s->pitch + x * bpp;
     for (uint16_t y = 0; y < h; ++y) {
         for (uint16_t x = 0; x < w; ++x)
-            memcpy(buf + y * w + x, rp + x, bpp);
+            memcpy(buf + y * w + x, rp + x * bpp, bpp);
         rp += s->pitch;
     }
-    printf("Draw %u\n", bpp);
     NDL_DrawRect(buf, x, y, w, h);
-    free(buf);*/
+    free(buf);
 }
 
 // APIs below are already implemented.
