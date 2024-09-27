@@ -6,47 +6,42 @@
 #include <sys/time.h>
 #include <fcntl.h>
 
-static int evtdev = -1;
-static int fbdev = -1;
 static int screen_w = 0, screen_h = 0;
-static int dis_w = 0, dis_h = 0;
+static int canvas_w = 0, canvas_h = 0;
 
 uint32_t NDL_GetTicks() {
-  struct timeval cur;
-  gettimeofday(&cur, NULL);
-  return cur.tv_sec * 1000 + cur.tv_usec / 1000;
+    struct timeval cur;
+    gettimeofday(&cur, NULL);
+    return cur.tv_sec * 1000 + cur.tv_usec / 1000;
 }
 
 static int eventFile;
 
 int NDL_PollEvent(char *buf, int len) {
-  size_t res = read(eventFile, buf, len);
-  return res != 0;
+    size_t res = read(eventFile, buf, len);
+    return res != 0;
 }
 
 void NDL_OpenCanvas(int *w, int *h) {
-
-
-  if (getenv("NWM_APP")) {
-    int fbctl = 4;
-    fbdev = 5;
-    screen_w = *w; screen_h = *h;
-    char buf[64];
-    int len = sprintf(buf, "%d %d", screen_w, screen_h);
-    // let NWM resize the window and create the frame buffer
-    write(fbctl, buf, len);
-    while (1) {
-      // 3 = evtdev
-      int nread = read(3, buf, sizeof(buf) - 1);
-      if (nread <= 0) continue;
-      buf[nread] = '\0';
-      if (strcmp(buf, "mmap ok") == 0) break;
+    if (*w == 0 && *h == 0) {
+        *w = screen_w;
+        *h = screen_h;
     }
-    close(fbctl);
-  }
+    canvas_w = *w;
+    canvas_h = *h;
 }
 
 void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
+    gpu_fbdraw_op drawOp;
+    drawOp.sync = true;
+    drawOp.pixels = pixels;
+    x += (screen_w - canvas_w) / 2;
+    y += (screen_h - canvas_h) / 2;
+    drawOp.x = x;
+    drawOp.y = y;
+    drawOp.w = w;
+    drawOp.h = h;
+    _fbdraw(&drawOp);
 }
 
 void NDL_OpenAudio(int freq, int channels, int samples) {
@@ -56,27 +51,24 @@ void NDL_CloseAudio() {
 }
 
 int NDL_PlayAudio(void *buf, int len) {
-  return 0;
+    return 0;
 }
 
 int NDL_QueryAudio() {
-  return 0;
+    return 0;
 }
 
 int NDL_Init(uint32_t flags) {
-  if (getenv("NWM_APP")) {
-    evtdev = 3;
-  }
-  eventFile = open("/dev/events", 0);
+    eventFile = open("/dev/events", 0);
 
-  int dispInfo = open("/proc/dispinfo", 0);
-  char buf[128];
-  read(dispInfo, buf, 128);
-  sscanf(buf, "WIDTH:%d\nHEIGHT:%d", &screen_w, &screen_h);
-  close(dispInfo);
-  return 0;
+    int dispInfo = open("/proc/dispinfo", 0);
+    char buf[128];
+    read(dispInfo, buf, 128);
+    sscanf(buf, "WIDTH:%d\nHEIGHT:%d", &screen_w, &screen_h);
+    close(dispInfo);
+    return 0;
 }
 
 void NDL_Quit() {
-  close(eventFile);
+    close(eventFile);
 }
