@@ -26,6 +26,7 @@ int SDL_OpenAudio(SDL_AudioSpec *desired, SDL_AudioSpec *obtained) {
     NDL_OpenAudio(desired->freq, desired->channels, desired->samples);
     audio_callback = desired->callback;
     audio_callback_userdata = desired->userdata;
+    audio_playing = true;
     return 0;
 }
 
@@ -34,7 +35,6 @@ void SDL_CloseAudio() {
 }
 
 void SDL_PauseAudio(int pause_on) {
-    printf("Audio call\n");
     audio_playing = !pause_on;
 }
 
