@@ -22,6 +22,7 @@ void SDL_try_callback() {
 }
 
 int SDL_OpenAudio(SDL_AudioSpec *desired, SDL_AudioSpec *obtained) {
+    printf("Audio open\n");
     if (obtained != NULL) memcpy(obtained, desired, sizeof(SDL_AudioSpec));
     NDL_OpenAudio(desired->freq, desired->channels, desired->samples);
     audio_callback = desired->callback;
