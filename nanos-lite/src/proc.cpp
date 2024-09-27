@@ -25,7 +25,7 @@ EXTERNC void init_proc() {
     Log("Initializing processes...");
 
     // load program here
-    load_program("/bin/nslider");
+    load_program("/bin/nterm");
 }
 
 EXTERNC Context *schedule(Context *prev) {
