@@ -18,6 +18,12 @@ int main() {
     Log("'Hello World!' from Nanos-lite");
     Log("Build time: %s, %s", __TIME__, __DATE__);
 
+    while (true) {
+        void* tmp = malloc(600000);
+        if (tmp == NULL) panic("test");
+        free(tmp);
+    }
+
     init_mm();
 
     init_device();
