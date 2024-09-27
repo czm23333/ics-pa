@@ -33,6 +33,7 @@ void map_range(AddrSpace* space, uintptr_t begin, uintptr_t end, uint8_t priv) {
 int mm_brk(uintptr_t brk) {
     uintptr_t newbrk = ROUNDUP(brk, PGSIZE);
     uintptr_t prev = current->brk;
+    Log("MM BRK %d %dn", prev, newbrk);
     if (prev == newbrk) return 0;
     if (prev < newbrk) {
         Sv32Priv priv;
