@@ -52,6 +52,7 @@ static malloc_block_head *alloc_block(size_t size, size_t alignment) {
     size_t relSize = size + sizeof(malloc_block_head);
     if (first_block == NULL) {
         char *aligned = aligned_header_address(malloc_buffer, alignment);
+        printf("aligned: %d\n", aligned);
         if (relSize > sizeof(malloc_buffer) - (aligned - malloc_buffer)) return NULL;
         first_block = (malloc_block_head *) aligned;
         first_block->pre = NULL;

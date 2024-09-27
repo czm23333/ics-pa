@@ -4,7 +4,7 @@
 
 void *new_page(size_t nr_page) {
     void* res = aligned_alloc(PGSIZE, PGSIZE * nr_page);
-    if (res == NULL) panic("omg");
+    if (res == NULL) panic("page bad alloc");
     return res;
 }
 
