@@ -44,7 +44,7 @@ void refresh_terminal() {
         needsync = 1;
       }
   term->clear();
-/*
+
   static uint32_t last = 0;
   static int flip = 0;
   uint32_t now = SDL_GetTicks();
@@ -52,12 +52,12 @@ void refresh_terminal() {
     int x = term->cursor.x, y = term->cursor.y;
     uint32_t color = (flip ? term->foreground(x, y) : term->background(x, y));
     draw_ch(x * font->w, y * font->h, ' ', 0, color);
-    SDL_UpdateRect(screen, 0, 0, 0, 0);
+    //SDL_UpdateRect(screen, 0, 0, 0, 0);
     if (now - last > 500) {
       flip = !flip;
       last = now;
     }
-  }*/
+  }
 }
 
 #define ENTRY(KEYNAME, NOSHIFT, SHIFT) { SDLK_##KEYNAME, #KEYNAME, NOSHIFT, SHIFT }
