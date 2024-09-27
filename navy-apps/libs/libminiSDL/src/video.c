@@ -70,7 +70,6 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
     }
     SDL_LockSurface(s);
     NDL_OpenCanvas(&s->w, &s->h);
-    //NDL_DrawRect((uint32_t*) s->pixels, x, y, w, h);
     uint32_t* buf = malloc(w * h * sizeof(uint32_t));
     uint8_t bpp = s->format->BytesPerPixel;
     uint8_t* rp = s->pixels + y * s->pitch + x * bpp;
