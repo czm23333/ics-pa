@@ -20,7 +20,7 @@ void free_page(void *p) {
 
 void map_range_aligned(AddrSpace* space, uintptr_t begin, uintptr_t end, uint8_t priv) {
     while (begin < end) {
-        Log("MM %d %d", begin, priv & 1);
+        //Log("MM %d %d", begin, priv & 1);
         map(space, (void *) begin, new_page(1), priv);
         begin += PGSIZE;
     }
