@@ -202,7 +202,6 @@ SDL_STBIMG_DEF SDL_Surface* STBIMG_LoadFromMemory(const unsigned char* buffer, i
 		return NULL;
 	}
 
-	printf("hello\n");
 	inforet = stbi_info_from_memory(buffer, length, &img.w, &img.h, &img.format);
 	if(!inforet)
 	{
@@ -214,7 +213,7 @@ SDL_STBIMG_DEF SDL_Surface* STBIMG_LoadFromMemory(const unsigned char* buffer, i
 	origin_has_alpha = !(img.format == STBI_grey || img.format == STBI_rgb);
 	bppToUse = STBI_rgb_alpha;
 
-	printf("hello2\n");
+	printf("addr: %p\n", stbi_load_from_memory);
 	img.data = stbi_load_from_memory(buffer, length, &img.w, &img.h, &img.format, bppToUse);
 	if(img.data == NULL)
 	{
@@ -223,7 +222,6 @@ SDL_STBIMG_DEF SDL_Surface* STBIMG_LoadFromMemory(const unsigned char* buffer, i
 	}
 	img.format = bppToUse;
 
-	printf("hello3\n");
 	ret = STBIMG__CreateSurfaceImpl(img, origin_has_alpha, 1);
 
 	if(ret == NULL)
