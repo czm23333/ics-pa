@@ -40,6 +40,25 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
 }
 
 void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
+    SDL_Rect dstr;
+    if (dstrect == NULL) {
+        dstr.x = 0, dstr.y = 0;
+        dstr.w = dst->w, dstr.h = dst->h;
+    } else dstr = *dstrect;
+
+    SDL_LockSurface(dst);
+
+    uint8_t bpp = dst->format->BytesPerPixel;
+    uint8_t* dstrp = dst->pixels + dstr.y * dst->pitch + dstr.x * bpp;
+    for (uint16_t y = 0; y < dstr.h; ++y) {
+        for (uint16_t x = 0; x < dstr.w; ++x) {
+            uint8_t* dp = dstrp + x * bpp;
+            memcpy(dp, &color, bpp);
+        }
+        dstrp += dst->pitch;
+    }
+
+    SDL_UnlockSurface(dst);
 }
 
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
