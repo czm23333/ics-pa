@@ -21,7 +21,7 @@ void init_proc() {
     // load program here
     context_uload(&pcb[0], "/bin/file-test");
     context_uload(&pcb[1], "/bin/dummy");
-    context_uload(&pcb[2], "/bin/timer-test");
+    context_uload(&pcb[2], "/bin/event-test");
 }
 
 Context *schedule(Context *prev) {

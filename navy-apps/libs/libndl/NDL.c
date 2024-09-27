@@ -15,8 +15,11 @@ uint32_t NDL_GetTicks() {
   return cur.tv_sec * 1000 + cur.tv_usec / 1000;
 }
 
+static FILE* eventFile;
+
 int NDL_PollEvent(char *buf, int len) {
-  return 0;
+  size_t res = fread(buf, len, len, eventFile);
+  return res != 0;
 }
 
 void NDL_OpenCanvas(int *w, int *h) {
@@ -60,8 +63,10 @@ int NDL_Init(uint32_t flags) {
   if (getenv("NWM_APP")) {
     evtdev = 3;
   }
+  eventFile = fopen("/dev/events", "r");
   return 0;
 }
 
 void NDL_Quit() {
+  fclose(eventFile);
 }

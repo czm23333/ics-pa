@@ -8,12 +8,23 @@
 
 #include <externc.h>
 
+struct SPFInfo {
+    const char *name;
+    ReadFn read;
+    WriteFn write;
+    SeekFn seek;
+
+    bool operator==(const char *s) const {
+        return strcmp(name, s) == 0;
+    }
+};
+
 struct Finfo {
     const char *name;
     size_t size;
     size_t disk_offset;
 
-    bool operator==(const char* s) const {
+    bool operator==(const char *s) const {
         return strcmp(name, s) == 0;
     }
 };
@@ -80,14 +91,25 @@ static Finfo file_table[] __attribute__((used)) = {
 #include "files.h"
 };
 
-FDInfo* findFD(int fd) {
+static SPFInfo special_file_table[] = {
+    {"/dev/events", events_read, invalid_write, invalid_seek}
+};
+
+FDInfo *findFD(int fd) {
     auto it = std::find(fdList.begin(), fdList.end(), fd);
     if (it == fdList.end()) return nullptr;
     return &*it;
 }
 
 int fs_open(const char *pathname, int flags, int mode) {
-    for (auto& file : file_table) {
+    for (auto& spf : special_file_table) {
+        if (spf == pathname) {
+            fdList.emplace_back(fdId, 1, nullptr, 0, spf.read, spf.write, spf.seek);
+            return fdId++;
+        }
+    }
+
+    for (auto &file: file_table) {
         if (file == pathname) {
             fdList.emplace_back(fdId, 1, &file, 0, file_read, file_write, file_seek);
             return fdId++;
@@ -97,25 +119,25 @@ int fs_open(const char *pathname, int flags, int mode) {
 }
 
 size_t fs_read(int fd, void *buf, size_t len) {
-    FDInfo* fdi = findFD(fd);
+    FDInfo *fdi = findFD(fd);
     if (fdi == nullptr) return 0;
     return fdi->read(fdi->arg, fdi, buf, len);
 }
 
 size_t fs_write(int fd, const void *buf, size_t len) {
-    FDInfo* fdi = findFD(fd);
+    FDInfo *fdi = findFD(fd);
     if (fdi == nullptr) return 0;
     return fdi->write(fdi->arg, fdi, buf, len);
 }
 
 off_t fs_lseek(int fd, off_t offset, int whence) {
-    FDInfo* fdi = findFD(fd);
+    FDInfo *fdi = findFD(fd);
     if (fdi == nullptr) return -1;
     return fdi->seek(fdi->arg, fdi, offset, whence);
 }
 
 off_t fs_tell(int fd) {
-    FDInfo* fdi = findFD(fd);
+    FDInfo *fdi = findFD(fd);
     if (fdi == nullptr) return -1;
     return fdi->offset;
 }
