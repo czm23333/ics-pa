@@ -9,11 +9,14 @@ static const char *keyname[] = {
     _KEYS(keyname)
 };
 
+void SDL_try_callback();
+
 int SDL_PushEvent(SDL_Event *ev) {
     return 0;
 }
 
 int SDL_PollEvent(SDL_Event *ev) {
+    SDL_try_callback();
     char buf[128];
     if (!NDL_PollEvent(buf, sizeof(buf))) return 0;
     if (strncmp("kd", buf, 2) == 0) ev->key.type = SDL_KEYDOWN;

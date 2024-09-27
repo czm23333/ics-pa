@@ -63,7 +63,10 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
     SDL_UnlockSurface(dst);
 }
 
+void SDL_try_callback();
+
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
+    SDL_try_callback();
     if (x == 0 && y == 0 && w == 0 && h == 0) {
         w = s->w;
         h = s->h;

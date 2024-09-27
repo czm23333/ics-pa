@@ -12,7 +12,10 @@ int SDL_RemoveTimer(SDL_TimerID id) {
   return 1;
 }
 
+void SDL_try_callback();
+
 uint32_t SDL_GetTicks() {
+  SDL_try_callback();
   return NDL_GetTicks() - sdlInitTime;
 }
 
