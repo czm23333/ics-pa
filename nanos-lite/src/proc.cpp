@@ -25,11 +25,7 @@ EXTERNC void init_proc() {
     Log("Initializing processes...");
 
     // load program here
-    load_program("/bin/file-test");
-    load_program("/bin/dummy");
     load_program("/bin/menu");
-    load_program("/bin/timer-test");
-    load_program("/bin/cpp-test");
 }
 
 EXTERNC Context *schedule(Context *prev) {
