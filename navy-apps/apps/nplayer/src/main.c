@@ -7,7 +7,7 @@
 #include <vorbis.h>
 #include <fixedptc.h>
 
-#define MUSIC_PATH "/share/music/file_example_OOG_2MG.ogg"
+#define MUSIC_PATH "/share/music/Example.ogg"
 #define SAMPLES 4096
 #define FPS 10
 #define W 400
@@ -93,7 +93,6 @@ int main(int argc, char *argv[]) {
 
   int error;
   v = stb_vorbis_open_memory(buf, size, &error, NULL);
-  if (v == NULL) printf("err:%d\n", error);
   assert(v);
   info = stb_vorbis_get_info(v);
 
