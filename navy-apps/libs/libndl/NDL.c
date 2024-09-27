@@ -16,6 +16,8 @@ uint32_t NDL_GetTicks() {
 }
 
 static int eventFile;
+static int sbctlFile;
+static int sbFile;
 
 int NDL_PollEvent(char *buf, int len) {
     size_t res = read(eventFile, buf, len);
@@ -45,21 +47,34 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
 }
 
 void NDL_OpenAudio(int freq, int channels, int samples) {
+    struct {
+        int freq;
+        int channels;
+        int samples;
+    } tmp;
+    tmp.freq = freq;
+    tmp.channels = channels;
+    tmp.samples = samples;
+    write(sbctlFile, &tmp, sizeof(tmp));
 }
 
 void NDL_CloseAudio() {
 }
 
 int NDL_PlayAudio(void *buf, int len) {
-    return 0;
+    return write(sbFile, buf, len);
 }
 
 int NDL_QueryAudio() {
-    return 0;
+    int res;
+    read(sbctlFile, &res, sizeof(res));
+    return res;
 }
 
 int NDL_Init(uint32_t flags) {
     eventFile = open("/dev/events", 0);
+    sbctlFile = open("/dev/sbctl", 0);
+    sbFile = open("/dev/sb", 0);
 
     int dispInfo = open("/proc/dispinfo", 0);
     char buf[128];
@@ -71,4 +86,6 @@ int NDL_Init(uint32_t flags) {
 
 void NDL_Quit() {
     close(eventFile);
+    close(sbctlFile);
+    close(sbFile);
 }

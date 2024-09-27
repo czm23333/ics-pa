@@ -7,7 +7,6 @@ html:
 
 # Custom settings
 VME = 1
-LIBS += libndl libminiSDL
 
 ## 1. Basic Setup and Checks
 
@@ -172,7 +171,7 @@ $(CLEAN_ALL):
 .PHONY: clean-all $(CLEAN_ALL)
 
 ### Build fsimg and ramdisk for Nanos-lite
-APPS =
+APPS = nslider
 TESTS = dummy hello file-test timer-test event-test bmp-test cpp-test
 
 fsimg: $(addprefix apps/, $(APPS)) $(addprefix tests/, $(TESTS))
