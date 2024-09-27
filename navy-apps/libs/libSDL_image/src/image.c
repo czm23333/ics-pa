@@ -19,7 +19,6 @@ SDL_Surface *IMG_Load(const char *filename) {
     uint8_t* buf = malloc(size);
     fread(buf, size, 1, file);
     fclose(file);
-    printf("hello\n");
     SDL_Surface *surface = STBIMG_LoadFromMemory(buf, size);
     free(buf);
     return surface;
