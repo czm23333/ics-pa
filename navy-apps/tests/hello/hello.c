@@ -3,11 +3,6 @@
 #include <stdlib.h>
 
 int main() {
-  while (1) {
-    void* tmp = malloc(600000);
-    free(tmp);
-  }
-
   write(1, "Hello World!\n", 13);
   int i = 2;
   volatile int j = 0;
