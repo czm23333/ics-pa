@@ -3,7 +3,9 @@
 #include "proc.h"
 
 void *new_page(size_t nr_page) {
-    return aligned_alloc(PGSIZE, PGSIZE * nr_page);
+    void* res = aligned_alloc(PGSIZE, PGSIZE * nr_page);
+    if (res == NULL) panic("omg");
+    return res;
 }
 
 #ifdef HAS_VME
