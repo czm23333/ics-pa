@@ -80,7 +80,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
         rp += s->pitch;
     }
     NDL_DrawRect(buf, x, y, w, h);
-    //free(buf);
+    free(buf);
     SDL_UnlockSurface(s);
 }
 
