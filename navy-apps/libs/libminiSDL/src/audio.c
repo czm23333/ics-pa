@@ -15,6 +15,7 @@ void SDL_try_callback() {
     static uint32_t last = 0;
     uint32_t now = NDL_GetTicks();
     if (now - last >= 1000 / 60) {
+        printf("Audio call\n");
         last = now;
         audio_callback(audio_callback_userdata, audio_buffer, sizeof(audio_buffer));
         NDL_PlayAudio(audio_buffer, sizeof(audio_buffer));
@@ -22,7 +23,6 @@ void SDL_try_callback() {
 }
 
 int SDL_OpenAudio(SDL_AudioSpec *desired, SDL_AudioSpec *obtained) {
-    printf("Audio open\n");
     if (obtained != NULL) memcpy(obtained, desired, sizeof(SDL_AudioSpec));
     NDL_OpenAudio(desired->freq, desired->channels, desired->samples);
     audio_callback = desired->callback;
