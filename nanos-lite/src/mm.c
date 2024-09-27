@@ -21,8 +21,10 @@ void free_page(void *p) {
 }
 
 void map_range_aligned(AddrSpace* space, uintptr_t begin, uintptr_t end, uint8_t priv) {
+    Sv32Priv privParts;
+    privParts.val = priv;
     while (begin < end) {
-        map(space, (void *) begin, new_page(1), priv);
+        map(space, (void *) begin, privParts.V ? new_page(1) : NULL, priv);
         begin += PGSIZE;
     }
 }
