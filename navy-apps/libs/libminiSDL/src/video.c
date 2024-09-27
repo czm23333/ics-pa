@@ -52,7 +52,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
             memcpy(buf + y * w + x, rp + x, bpp);
         rp += s->pitch;
     }
-    printf("Draw\n");
+    printf("Draw %u\n", bpp);
     NDL_DrawRect(buf, x, y, w, h);
     free(buf);
 }
