@@ -1,9 +1,12 @@
 #include <proc.h>
+#include <externc.h>
+#include <mlist.h>
 
-void context_uload(PCB *pcb, const char *filename);
+EXTERNC void context_uload(PCB *pcb, const char *filename);
 
 #define MAX_NR_PROC 3
 
+mlist<PCB> pcbs;
 static PCB pcb[MAX_NR_PROC] __attribute__((used)) = {};
 static PCB pcb_boot = {};
 PCB *current = NULL;
@@ -13,7 +16,7 @@ void switch_boot_pcb() {
     asm volatile("csrw mscratch, %0" : : "r" (current->stack + sizeof(current->stack)));
 }
 
-void init_proc() {
+EXTERNC void init_proc() {
     switch_boot_pcb();
 
     Log("Initializing processes...");
@@ -24,7 +27,7 @@ void init_proc() {
     context_uload(&pcb[2], "/bin/bmp-test");
 }
 
-Context *schedule(Context *prev) {
+EXTERNC Context *schedule(Context *prev) {
     if (current == &pcb_boot) {
         pcb_boot.cp = prev;
         current = &pcb[0];

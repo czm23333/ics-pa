@@ -5,6 +5,10 @@ html:
 	cat Makefile | sed 's/^\([^#]\)/    \1/g' | markdown_py > Makefile.html
 .PHONY: html
 
+# Custom settings
+VME = 1
+LIBS += libndl libminiSDL
+
 ## 1. Basic Setup and Checks
 
 ### Default to build an application
@@ -47,7 +51,7 @@ ARCHIVE  = $(WORK_DIR)/build/$(NAME)-$(ISA).a
 
 ### Add default libraries for ISA != native
 ifneq ($(ISA), native)
-LIBS += libc libos libndl
+LIBS += libc libos
 CFLAGS += -U_FORTIFY_SOURCE  # fix compile error in Newlib on ubuntu
 else
 WL = -Wl,
