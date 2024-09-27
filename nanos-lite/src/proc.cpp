@@ -27,7 +27,7 @@ EXTERNC void init_proc() {
     // load program here
     load_program("/bin/file-test");
     load_program("/bin/dummy");
-    load_program("/bin/bmp-test");
+    load_program("/bin/nslider");
     load_program("/bin/timer-test");
     load_program("/bin/event-test");
     load_program("/bin/cpp-test");

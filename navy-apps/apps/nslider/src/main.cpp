@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <assert.h>
 
+#include "../../../libs/libndl/include/NDL.h"
+
 #define W 400
 #define H 300
 
@@ -23,9 +25,10 @@ void render() {
   char fname[256];
   sprintf(fname, path, cur);
   SDL_Surface *slide = SDL_LoadBMP(fname);
-  assert(slide);
-  SDL_BlitSurface(slide, NULL, screen, NULL);
-  SDL_UpdateRect(screen, 0, 0, 0, 0);
+  NDL_DrawRect(reinterpret_cast<uint32_t *>(slide->pixels), 0, 0, slide->w, slide->h);
+  //assert(slide);
+  //SDL_BlitSurface(slide, NULL, screen, NULL);
+  //SDL_UpdateRect(screen, 0, 0, 0, 0);
   SDL_FreeSurface(slide);
 }
 
