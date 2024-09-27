@@ -66,7 +66,9 @@ size_t sbctl_write(void *arg, FDInfo *fd, const void *buf, size_t len) {
 size_t sb_write(void *arg, FDInfo *fd, const void *buf, size_t len) {
     AM_AUDIO_PLAY_T play;
     play.buf = Area{const_cast<void *>(buf), static_cast<char *>(const_cast<void *>(buf)) + len};
+    printf("Audio call\n");
     ioe_write(AM_AUDIO_PLAY, &play);
+    printf("Audio call2\n");
     return len;
 }
 
