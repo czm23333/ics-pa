@@ -4,7 +4,7 @@
 
 int main() {
   while (1) {
-    void* tmp = malloc(4096);
+    void* tmp = malloc(600000);
     free(tmp);
   }
 
