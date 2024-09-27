@@ -20,6 +20,7 @@ void free_page(void *p) {
 
 void map_range_aligned(AddrSpace* space, uintptr_t begin, uintptr_t end, uint8_t priv) {
     while (begin < end) {
+        Log("MM %d %d", begin, priv & 1);
         map(space, (void *) begin, new_page(1), priv);
         begin += PGSIZE;
     }
@@ -33,7 +34,6 @@ void map_range(AddrSpace* space, uintptr_t begin, uintptr_t end, uint8_t priv) {
 int mm_brk(uintptr_t brk) {
     uintptr_t newbrk = ROUNDUP(brk, PGSIZE);
     uintptr_t prev = current->brk;
-    Log("MM BRK %d %d", prev, newbrk);
     if (prev == newbrk) return 0;
     if (prev < newbrk) {
         Sv32Priv priv;
