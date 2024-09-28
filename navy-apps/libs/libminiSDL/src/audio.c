@@ -11,14 +11,14 @@ static void *audio_callback_userdata;
 static uint8_t audio_buffer[4096];
 
 void SDL_try_callback() {
-    printf("hello\n");
     if (!audio_playing) return;
     static uint32_t last = 0;
     uint32_t now = NDL_GetTicks();
-    printf("hello2\n");
     if (now - last >= 1000 / 60) {
         last = now;
+        printf("hello\n");
         if (audio_callback != NULL) audio_callback(audio_callback_userdata, audio_buffer, sizeof(audio_buffer));
+        printf("hello2\n");
         NDL_PlayAudio(audio_buffer, sizeof(audio_buffer));
     }
 }
