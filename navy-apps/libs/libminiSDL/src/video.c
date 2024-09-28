@@ -66,7 +66,6 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
 void SDL_try_callback();
 
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
-    printf("hello\n");
     SDL_try_callback();
     if (x == 0 && y == 0 && w == 0 && h == 0) {
         w = s->w;
@@ -79,6 +78,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
     uint8_t* rp = s->pixels + y * s->pitch + x * bpp;
     for (uint16_t y = 0; y < h; ++y) {
         for (uint16_t x = 0; x < w; ++x) {
+            printf("%p\n", s->format->palette);
             if (bpp == 1) buf[y * w + x] = s->format->palette->colors[rp[x]].val;
             else memcpy(buf + y * w + x, rp + x * bpp, bpp);
         }
@@ -87,7 +87,6 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
     NDL_DrawRect(buf, x, y, w, h);
     free(buf);
     SDL_UnlockSurface(s);
-    printf("hello2\n");
 }
 
 // APIs below are already implemented.
