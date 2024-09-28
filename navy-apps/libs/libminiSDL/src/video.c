@@ -73,10 +73,10 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
     }
     SDL_LockSurface(s);
     NDL_OpenCanvas(&s->w, &s->h);
+    printf("hello\n");
     uint32_t* buf = malloc(w * h * sizeof(uint32_t));
     uint8_t bpp = s->format->BytesPerPixel;
     uint8_t* rp = s->pixels + y * s->pitch + x * bpp;
-    printf("hello\n");
     for (uint16_t y = 0; y < h; ++y) {
         for (uint16_t x = 0; x < w; ++x) {
             if (bpp == 1) buf[y * w + x] = s->format->palette->colors[rp[x]].val;
