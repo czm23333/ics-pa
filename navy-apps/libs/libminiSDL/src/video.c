@@ -66,6 +66,7 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
 void SDL_try_callback();
 
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
+    printf("hello\n");
     SDL_try_callback();
     if (x == 0 && y == 0 && w == 0 && h == 0) {
         w = s->w;
@@ -86,6 +87,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
     NDL_DrawRect(buf, x, y, w, h);
     free(buf);
     SDL_UnlockSurface(s);
+    printf("hello2\n");
 }
 
 // APIs below are already implemented.
