@@ -16,7 +16,7 @@ void SDL_try_callback() {
     uint32_t now = NDL_GetTicks();
     if (now - last >= 1000 / 60) {
         last = now;
-        audio_callback(audio_callback_userdata, audio_buffer, sizeof(audio_buffer));
+        if (audio_callback != NULL) audio_callback(audio_callback_userdata, audio_buffer, sizeof(audio_buffer));
         NDL_PlayAudio(audio_buffer, sizeof(audio_buffer));
     }
 }
