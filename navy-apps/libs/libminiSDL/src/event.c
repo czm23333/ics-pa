@@ -3,11 +3,14 @@
 #include <string.h>
 
 #define keyname(k) #k,
+#define zero(x) 0,
 
 static const char *keyname[] = {
     "NONE",
     _KEYS(keyname)
 };
+
+static uint8_t keyState[] = { 0, _KEYS(zero) };
 
 void SDL_try_callback();
 
@@ -26,6 +29,8 @@ int SDL_PollEvent(SDL_Event *ev) {
     for (uint8_t i = 0; i < sizeof(keyname) / sizeof(keyname[0]); ++i) {
         if (strcmp(keyname[i], tmp) == 0) {
             ev->key.keysym.sym = i;
+            if (ev->key.type == SDL_KEYUP) keyState[i] = 0;
+            else keyState[i] = 1;
             break;
         }
     }
@@ -42,5 +47,6 @@ int SDL_PeepEvents(SDL_Event *ev, int numevents, int action, uint32_t mask) {
 }
 
 uint8_t *SDL_GetKeyState(int *numkeys) {
-    return NULL;
+    if (numkeys) *numkeys = sizeof(keyState) / sizeof(keyState[0]);
+    return keyState;
 }
