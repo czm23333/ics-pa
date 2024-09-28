@@ -13,6 +13,9 @@ static uint8_t* audio_buffer;
 static uint32_t audio_buffer_size;
 
 void SDL_try_callback() {
+    static bool in_callback = false;
+    if (in_callback) return;
+    in_callback = true;
     if (!audio_playing) return;
     static uint32_t last = 0;
     uint32_t now = NDL_GetTicks();
@@ -21,6 +24,7 @@ void SDL_try_callback() {
         if (audio_callback != NULL) audio_callback(audio_callback_userdata, audio_buffer, audio_buffer_size);
         NDL_PlayAudio(audio_buffer, audio_buffer_size);
     }
+    in_callback = false;
 }
 
 int SDL_OpenAudio(SDL_AudioSpec *desired, SDL_AudioSpec *obtained) {
