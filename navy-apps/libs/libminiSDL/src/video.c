@@ -66,12 +66,13 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
 void SDL_try_callback();
 
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
+    printf("hello\n");
     SDL_try_callback();
+    printf("hello2\n");
     if (x == 0 && y == 0 && w == 0 && h == 0) {
         w = s->w;
         h = s->h;
     }
-    printf("hello\n");
     SDL_LockSurface(s);
     NDL_OpenCanvas(&s->w, &s->h);
     uint32_t* buf = malloc(w * h * sizeof(uint32_t));
