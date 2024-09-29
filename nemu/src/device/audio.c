@@ -54,8 +54,15 @@ static void SDLCALL audio_callback(void *userdata, Uint8 *stream, int len) {
 static void audio_io_handler(uint32_t offset, int len, bool is_write) {
     if (!is_write) return;
     if (len != 4) return;
-    if (offset == reg_init * sizeof(uint32_t) && audio_base[reg_init] && !audio_initialized) {
-        SDL_InitSubSystem(SDL_INIT_AUDIO);
+    if (offset == reg_init * sizeof(uint32_t) && audio_base[reg_init]) {
+        if (audio_initialized) {
+            mtx_lock(&audio_mutex);
+            SDL_CloseAudio();
+            audio_base[reg_count] = 0;
+            audio_base[reg_pad] = 0;
+            audio_initialized = false;
+            mtx_unlock(&audio_mutex);
+        }
         SDL_AudioSpec spec;
         memset(&spec, 0, sizeof(spec));
         spec.format = AUDIO_S16SYS;
@@ -89,4 +96,6 @@ void init_audio() {
     sbuf = new_space(CONFIG_SB_SIZE);
     audio_base[reg_sbuf_size] = CONFIG_SB_SIZE;
     add_mmio_map("audio-sbuf", CONFIG_SB_ADDR, sbuf, CONFIG_SB_SIZE, NULL);
+
+    SDL_InitSubSystem(SDL_INIT_AUDIO);
 }
