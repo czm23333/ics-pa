@@ -33,6 +33,7 @@ EXTERNC void init_proc() {
 
     // load program here
     load_program("/bin/nterm");
+    load_program("/bin/nterm");
 }
 
 EXTERNC Context *schedule(Context *prev) {
