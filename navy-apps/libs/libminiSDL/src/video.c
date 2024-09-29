@@ -80,6 +80,8 @@ static inline int maskToShift(uint32_t mask) {
 
 static SDL_PixelFormat defaultPixelFormat = {
     .palette = NULL,
+    .BitsPerPixel = 32,
+    .BytesPerPixel = 4,
     .Rmask = DEFAULT_RMASK,
     .Rshift = 16,
     .Rloss = 0,
