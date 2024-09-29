@@ -25,14 +25,14 @@ static void sh_prompt() {
 static void sh_handle_cmd(const char *cmd) {
     auto cmd_buf = new char[strlen(cmd) + 1];
     strcpy(cmd_buf, cmd);
-    char* fileName = strtok(cmd_buf, " ");
+    char* fileName = strtok(cmd_buf, " \n");
     if (fileName == nullptr) {
         delete[] cmd_buf;
         return;
     }
     auto args = new char*[1024];
     int argc = 0;
-    while ((args[argc] = strtok(nullptr, " ")) != nullptr)
+    while ((args[argc] = strtok(nullptr, " \n")) != nullptr)
         ++argc;
     char* envp[] = {nullptr};
     execve(fileName, args, envp);
