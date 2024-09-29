@@ -31,6 +31,18 @@ void NDL_OpenCanvas(int *w, int *h) {
     }
     canvas_w = *w;
     canvas_h = *h;
+
+    uint32_t* buf = malloc(sizeof(uint32_t) * screen_w * screen_h);
+    memset(buf, 0, sizeof(uint32_t) * screen_w * screen_h);
+    gpu_fbdraw_op drawOp;
+    drawOp.sync = true;
+    drawOp.pixels = buf;
+    drawOp.x = 0;
+    drawOp.y = 0;
+    drawOp.w = screen_w;
+    drawOp.h = screen_h;
+    _fbdraw(&drawOp);
+    free(buf);
 }
 
 void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
