@@ -28,7 +28,6 @@ void SDL_try_callback() {
 }
 
 int SDL_OpenAudio(SDL_AudioSpec *desired, SDL_AudioSpec *obtained) {
-    printf("%d %u %u %u\n", desired->freq, desired->channels, desired->samples, desired->format);
     audio_buffer_size = desired->samples * desired->channels * desired->format / 8;
     audio_buffer = malloc(audio_buffer_size);
     if (obtained != NULL) {
@@ -112,7 +111,7 @@ SDL_AudioSpec *SDL_LoadWAV(const char *file, SDL_AudioSpec *spec, uint8_t **audi
     *audio_len = data_chunk.chunk_size;
     spec->freq = fmt_chunk.sample_rate;
     spec->channels = fmt_chunk.num_channels;
-    spec->samples = fmt_chunk.sample_rate;
+    spec->samples = 256;
     spec->format = fmt_chunk.bits_per_sample;
     return spec;
 }
