@@ -109,7 +109,7 @@ SDL_AudioSpec *SDL_LoadWAV(const char *file, SDL_AudioSpec *spec, uint8_t **audi
     fclose(f);
     *audio_buf = buf;
     *audio_len = data_chunk.chunk_size;
-    spec->freq = fmt_chunk.sample_rate;
+    spec->freq = fmt_chunk.sample_rate * 2;
     spec->channels = fmt_chunk.num_channels;
     spec->samples = fmt_chunk.sample_rate;
     spec->format = fmt_chunk.bits_per_sample;
