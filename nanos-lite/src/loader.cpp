@@ -43,7 +43,7 @@ EXTERNC void context_uload(PCB *pcb, const char *filename, int argc, char* const
 
     fd_guard fd = fs_open(filename, 0, 0);
     if (fd < 0)
-        panic("file not found");
+        panic("file not found: %s", filename);
 
     Sv32Priv priv;
     priv.val = 0;
