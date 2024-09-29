@@ -23,7 +23,7 @@ size_t serial_write(void *arg, FDInfo *fd, const void *buf, size_t len) {
 }
 
 EXTERNC void load_program(const char *filename);
-EXTERNC void exit_last_program();
+EXTERNC void exit_first_program();
 
 size_t events_read(void *arg, FDInfo *fd, void *buf, size_t len) {
     AM_INPUT_KEYBRD_T key;
@@ -47,7 +47,7 @@ size_t events_read(void *arg, FDInfo *fd, void *buf, size_t len) {
 
     if (!key.keydown) {
         if (key.keycode == AM_KEY_F1) load_program("/bin/nterm");
-        else if (key.keycode == AM_KEY_F2) exit_last_program();
+        else if (key.keycode == AM_KEY_F2) exit_first_program();
     }
 
     return elen;

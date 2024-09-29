@@ -26,10 +26,9 @@ EXTERNC void destroy_pcb(PCB *pcb) {
     memset(pcb, 0, sizeof(PCB));
 }
 
-EXTERNC void exit_last_program() {
+EXTERNC void exit_first_program() {
     if (pcbs.size() == 0) return;
-    auto iter = pcbs.end();
-    --iter;
+    auto iter = pcbs.begin();
     if (current == &*iter) current->running = false;
     else {
         destroy_pcb(&*iter);
