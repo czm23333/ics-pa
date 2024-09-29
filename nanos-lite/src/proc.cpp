@@ -42,7 +42,6 @@ EXTERNC void init_proc() {
     Log("Initializing processes...");
 
     // load program here
-    load_program("/bin/timer-test");
     load_program("/bin/nterm");
 }
 
