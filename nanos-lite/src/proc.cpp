@@ -25,7 +25,7 @@ EXTERNC void init_proc() {
     Log("Initializing processes...");
 
     // load program here
-    load_program("/bin/pal");
+    load_program("/bin/bird");
 }
 
 EXTERNC Context *schedule(Context *prev) {
