@@ -22,6 +22,8 @@ size_t serial_write(void *arg, FDInfo *fd, const void *buf, size_t len) {
     return len;
 }
 
+EXTERNC void load_program(const char *filename);
+
 size_t events_read(void *arg, FDInfo *fd, void *buf, size_t len) {
     AM_INPUT_KEYBRD_T key;
     ioe_read(AM_INPUT_KEYBRD, &key);
@@ -41,6 +43,8 @@ size_t events_read(void *arg, FDInfo *fd, void *buf, size_t len) {
     bufc[2] = ' ';
     bufc += 3;
     strcpy(bufc, kn);
+
+    if (!key.keydown && key.keycode == AM_KEY_F1) load_program("/bin/nterm");
 
     return elen;
 }

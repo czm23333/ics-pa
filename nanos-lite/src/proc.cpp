@@ -14,7 +14,7 @@ void switch_boot_pcb() {
     asm volatile("csrw mscratch, %0" : : "r" (current->stack + sizeof(current->stack)));
 }
 
-void load_program(const char *filename) {
+EXTERNC void load_program(const char *filename) {
     auto iter = pcbs.emplace_back();
     char* const argv[] = {nullptr};
     char* const envp[] = {nullptr};
@@ -32,7 +32,7 @@ EXTERNC void init_proc() {
     Log("Initializing processes...");
 
     // load program here
-    load_program("/bin/nterm");
+    load_program("/bin/timer-test");
     load_program("/bin/nterm");
 }
 

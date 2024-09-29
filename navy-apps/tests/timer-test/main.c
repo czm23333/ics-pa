@@ -8,7 +8,7 @@ int main() {
     uint32_t start = NDL_GetTicks();
     while (1) {
         uint32_t cur = NDL_GetTicks();
-        if (cur - start >= 500) {
+        if (cur - start >= 2000) {
             start = cur;
             printf("Timer triggered\n");
         }
