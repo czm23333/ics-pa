@@ -31,18 +31,6 @@ void NDL_OpenCanvas(int *w, int *h) {
     }
     canvas_w = *w;
     canvas_h = *h;
-
-    uint32_t* buf = malloc(sizeof(uint32_t) * screen_w * screen_h);
-    memset(buf, 0, sizeof(uint32_t) * screen_w * screen_h);
-    gpu_fbdraw_op drawOp;
-    drawOp.sync = true;
-    drawOp.pixels = buf;
-    drawOp.x = 0;
-    drawOp.y = 0;
-    drawOp.w = screen_w;
-    drawOp.h = screen_h;
-    _fbdraw(&drawOp);
-    free(buf);
 }
 
 void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
@@ -88,11 +76,26 @@ int NDL_Init(uint32_t flags) {
     sbctlFile = open("/dev/sbctl", 0);
     sbFile = open("/dev/sb", 0);
 
-    int dispInfo = open("/proc/dispinfo", 0);
-    char buf[128];
-    read(dispInfo, buf, 128);
-    sscanf(buf, "WIDTH:%d\nHEIGHT:%d", &screen_w, &screen_h);
-    close(dispInfo);
+    {
+        int dispInfo = open("/proc/dispinfo", 0);
+        char buf[128];
+        read(dispInfo, buf, 128);
+        sscanf(buf, "WIDTH:%d\nHEIGHT:%d", &screen_w, &screen_h);
+        close(dispInfo);
+    }
+
+    uint32_t* buf = malloc(sizeof(uint32_t) * screen_w * screen_h);
+    memset(buf, 0, sizeof(uint32_t) * screen_w * screen_h);
+    gpu_fbdraw_op drawOp;
+    drawOp.sync = true;
+    drawOp.pixels = buf;
+    drawOp.x = 0;
+    drawOp.y = 0;
+    drawOp.w = screen_w;
+    drawOp.h = screen_h;
+    _fbdraw(&drawOp);
+    free(buf);
+
     return 0;
 }
 
