@@ -37,7 +37,7 @@ struct fd_guard {
     }
 };
 
-EXTERNC void context_uload(PCB *pcb, const char *filename) {
+EXTERNC void context_uload(PCB *pcb, const char *filename, int argc, char* const argv[], int envc, char* const envp[]) {
     protect(&pcb->as);
     as_guard guard(&pcb->as);
 
@@ -73,12 +73,44 @@ EXTERNC void context_uload(PCB *pcb, const char *filename) {
 
     pcb->brk = ROUNDUP(pcb->brk, PGSIZE);
 
-    constexpr uintptr_t stackTop = 0xE0000000;
+    uintptr_t stackTop = 0xE0000000;
     constexpr unsigned stackSize = 128 * 1024;
     map_range(&pcb->as, stackTop - stackSize, stackTop, priv.val);
 
+    auto* acArgv = new uintptr_t[argc + 1];
+    size_t acArgvSize = sizeof(uintptr_t) * (argc + 1);
+    auto* acEnvp = new uintptr_t[envc + 1];
+    size_t acEnvpSize = sizeof(uintptr_t) * (envc + 1);
+    for (int i = 0; i < argc; i++) {
+        char* arg = argv[i];
+        stackTop -= strlen(arg) + 1;
+        strcpy(reinterpret_cast<char *>(stackTop), arg);
+        acArgv[i] = stackTop;
+    }
+    acArgv[argc] = 0;
+    for (int i = 0; i < envc; i++) {
+        char* env = envp[i];
+        stackTop -= strlen(env) + 1;
+        strcpy(reinterpret_cast<char *>(stackTop), env);
+        acEnvp[i] = stackTop;
+    }
+    acEnvp[envc] = 0;
+
+    stackTop -= acArgvSize;
+    memcpy(reinterpret_cast<void *>(stackTop), acArgv, acArgvSize);
+    uintptr_t argvPtr = stackTop;
+    stackTop -= acEnvpSize;
+    memcpy(reinterpret_cast<void *>(stackTop), acEnvp, acEnvpSize);
+    uintptr_t envpPtr = stackTop;
+    delete[] acArgv;
+    delete[] acEnvp;
+
     pcb->cp = ucontext(&pcb->as, Area{pcb->stack, pcb->stack + sizeof(pcb->stack)}, stackTop,
                        reinterpret_cast<void *>(ehdr.e_entry));
+
+    pcb->cp->gpr[10] = argc; // a0, arg1: argc
+    pcb->cp->gpr[11] = argvPtr; // a1, arg2: argv
+    pcb->cp->gpr[12] = envpPtr; // a2, arg3: envp
 
     pcb->running = true;
 }

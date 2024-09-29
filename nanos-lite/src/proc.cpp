@@ -2,7 +2,7 @@
 #include <externc.h>
 #include <mlist.h>
 
-EXTERNC void context_uload(PCB *pcb, const char *filename);
+EXTERNC void context_uload(PCB *pcb, const char *filename, int argc, char* const argv[], int envc, char* const envp[]);
 
 mlist<PCB> pcbs;
 static PCB pcb_boot = {};
@@ -16,7 +16,14 @@ void switch_boot_pcb() {
 
 void load_program(const char *filename) {
     auto iter = pcbs.emplace_back();
-    context_uload(&*iter, filename);
+    char* const argv[] = {nullptr};
+    char* const envp[] = {nullptr};
+    context_uload(&*iter, filename, 0, argv, 0, envp);
+}
+
+EXTERNC void destroy_pcb(PCB *pcb) {
+    unprotect(&pcb->as);
+    memset(pcb, 0, sizeof(PCB));
 }
 
 EXTERNC void init_proc() {
@@ -25,7 +32,7 @@ EXTERNC void init_proc() {
     Log("Initializing processes...");
 
     // load program here
-    load_program("/bin/pal");
+    load_program("/bin/menu");
 }
 
 EXTERNC Context *schedule(Context *prev) {
@@ -40,7 +47,11 @@ EXTERNC Context *schedule(Context *prev) {
     current->cp = prev;
     auto nxtIter = currentIter;
     ++nxtIter;
-    if (!current->running) pcbs.erase(currentIter);
+    if (!current->running) {
+        disable_virtual();
+        destroy_pcb(current);
+        pcbs.erase(currentIter);
+    }
     if (nxtIter != pcbs.end()) {
         currentIter = nxtIter;
         current = &*currentIter;
