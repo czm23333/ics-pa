@@ -67,6 +67,33 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
     SDL_UnlockSurface(dst);
 }
 
+static inline int maskToShift(uint32_t mask) {
+    switch (mask) {
+        case 0x000000ff: return 0;
+        case 0x0000ff00: return 8;
+        case 0x00ff0000: return 16;
+        case 0xff000000: return 24;
+        case 0x00000000: return 24; // hack
+        default: assert(0);
+    }
+}
+
+static SDL_PixelFormat defaultPixelFormat = {
+    .palette = NULL,
+    .Rmask = DEFAULT_RMASK,
+    .Rshift = 16,
+    .Rloss = 0,
+    .Gmask = DEFAULT_GMASK,
+    .Gshift = 8,
+    .Gloss = 0,
+    .Bmask = DEFAULT_BMASK,
+    .Bshift = 0,
+    .Bloss = 0,
+    .Amask = DEFAULT_AMASK,
+    .Ashift = 24,
+    .Aloss = 0
+};
+
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
     SDL_try_callback();
     if (x == 0 && y == 0 && w == 0 && h == 0) {
@@ -80,7 +107,10 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
     uint8_t* rp = s->pixels + y * s->pitch + x * bpp;
     for (uint16_t y = 0; y < h; ++y) {
         for (uint16_t x = 0; x < w; ++x) {
-            if (bpp == 1) buf[y * w + x] = s->format->palette->colors[rp[x]].val;
+            if (bpp == 1) {
+                const SDL_Color color = s->format->palette->colors[rp[x]];
+                buf[y * w + x] = SDL_MapRGBA(&defaultPixelFormat, color.r, color.g, color.b, color.a);
+            }
             else memcpy(buf + y * w + x, rp + x * bpp, bpp);
         }
         rp += s->pitch;
@@ -91,17 +121,6 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
 }
 
 // APIs below are already implemented.
-
-static inline int maskToShift(uint32_t mask) {
-    switch (mask) {
-        case 0x000000ff: return 0;
-        case 0x0000ff00: return 8;
-        case 0x00ff0000: return 16;
-        case 0xff000000: return 24;
-        case 0x00000000: return 24; // hack
-        default: assert(0);
-    }
-}
 
 SDL_Surface *SDL_CreateRGBSurface(uint32_t flags, int width, int height, int depth,
                                   uint32_t Rmask, uint32_t Gmask, uint32_t Bmask, uint32_t Amask) {
