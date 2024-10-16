@@ -118,13 +118,14 @@ static const unsigned op##_reg = [] { \
     parsers[level].emplace_back([](unsigned currentLevel, std::string_view sv) -> std::unique_ptr<expression> { \
         if (sv.empty()) return {}; \
         constexpr std::string_view toFind = c; \
-        auto pos = sv.rfind(toFind); \
-        if (pos == std::string_view::npos) return {}; \
-        auto right = parse_expr(currentLevel - 1, sv.substr(pos + toFind.size())); \
-        if (!right) return {}; \
-        auto left = parse_expr(currentLevel, sv.substr(0, pos)); \
-        if (!left) return {}; \
-        return std::make_unique<op>(std::move(left), std::move(right)); \
+        for (auto pos = sv.rfind(toFind); pos != std::string_view::npos; pos = pos == 0 ? std::string_view::npos : sv.rfind(toFind, pos - 1)) { \
+            auto right = parse_expr(currentLevel - 1, sv.substr(pos + toFind.size())); \
+            if (!right) continue; \
+            auto left = parse_expr(currentLevel, sv.substr(0, pos)); \
+            if (!left) continue; \
+            return std::make_unique<op>(std::move(left), std::move(right)); \
+        } \
+        return {}; \
     }); \
     return 0; \
 }()
@@ -329,7 +330,7 @@ static const unsigned op##_reg = [] { \
         if (sv.empty()) return {}; \
         if (sv.front() == c) { \
             sv.remove_prefix(1); \
-            if (auto res = parse_expr(currentLevel - 1, sv)) return std::make_unique<op>(std::move(res)); \
+            if (auto res = parse_expr(currentLevel, sv)) return std::make_unique<op>(std::move(res)); \
             return {}; \
         } \
         return {}; \
