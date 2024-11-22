@@ -13,7 +13,8 @@ struct function_space {
     function_space(std::string name, Elf32_Addr addr, Elf32_Word size) : name(std::move(name)), addr(addr), size(size) {}
 };
 std::vector<function_space> functions;
-
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
 extern "C" void load_elf(char* filePath) {
     if (filePath == nullptr) return;
 
@@ -57,6 +58,7 @@ extern "C" void load_elf(char* filePath) {
 
     fclose(file);
 }
+#pragma GCC diagnostic pop
 
 std::string get_function_name(vaddr_t addr) {
     for (auto& function : functions)
